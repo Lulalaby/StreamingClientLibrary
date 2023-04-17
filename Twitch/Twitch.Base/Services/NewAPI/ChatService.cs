@@ -154,13 +154,15 @@ namespace Twitch.Base.Services.NewAPI
         /// Deletes the specified message in the broadcaster's chat room.
         /// </summary>
         /// <param name="channelID">The channel ID to clear chat for</param>
+        /// <param name="moderatorID">The ID of the moderator deleting the message</param>
         /// <param name="messageID">The message ID to delete</param>
-        public async Task DeleteChatMessage(string channelID, string messageID)
+        public async Task DeleteChatMessage(string channelID, string moderatorID, string messageID)
         {
             Validator.ValidateString(channelID, "channelID");
+            Validator.ValidateString(moderatorID, "moderatorID");
             Validator.ValidateString(messageID, "messageID");
 
-            await this.DeleteAsync("moderation/chat?broadcaster_id=" + channelID + "&moderator_id=" + channelID + "&message_id=" + messageID);
+            await this.DeleteAsync("moderation/chat?broadcaster_id=" + channelID + "&moderator_id=" + moderatorID + "&message_id=" + messageID);
         }
 
         /// <summary>

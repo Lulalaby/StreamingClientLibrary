@@ -215,14 +215,16 @@ namespace Twitch.Base.Clients
         /// Deletes the specified message.
         /// </summary>
         /// <param name="broadcaster">The broadcaster's channel to use</param>
+        /// <param name="moderator">The moderator deleting the message</param>
         /// <param name="messageID">The ID of the message to clear</param>
         /// <returns>An awaitable Task</returns>
-        public async Task DeleteMessage(NewAPI.Users.UserModel broadcaster, string messageID)
+        public async Task DeleteMessage(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator, string messageID)
         {
             Validator.ValidateVariable(broadcaster, "broadcaster");
+            Validator.ValidateVariable(moderator, "moderator");
             Validator.ValidateString(messageID, "messageID");
 
-            await this.connection.NewAPI.Chat.DeleteChatMessage(broadcaster.id, messageID);
+            await this.connection.NewAPI.Chat.DeleteChatMessage(broadcaster.id, moderator.id, messageID);
         }
 
         /// <summary>
