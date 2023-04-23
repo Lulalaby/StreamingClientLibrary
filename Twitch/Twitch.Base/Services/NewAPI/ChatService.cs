@@ -148,28 +148,54 @@ namespace Twitch.Base.Services.NewAPI
             Validator.ValidateString(targetChannelID, "targetChannelID");
 
             await this.PostAsync("raids?from_broadcaster_id=" + channelID + "&to_broadcaster_id=" + targetChannelID, AdvancedHttpClient.CreateEmptyContent());
-        }
+		}
 
-        /// <summary>
-        /// Deletes the specified message in the broadcaster's chat room.
-        /// </summary>
-        /// <param name="channelID">The channel ID to clear chat for</param>
-        /// <param name="moderatorID">The ID of the moderator deleting the message</param>
-        /// <param name="messageID">The message ID to delete</param>
-        public async Task DeleteChatMessage(string channelID, string moderatorID, string messageID)
+		/// <summary>
+		/// Deletes the specified message in the broadcaster's chat room.
+		/// </summary>
+		/// <param name="channelID">The channel ID to delete message in</param>
+		/// <param name="messageID">The message ID to delete</param>
+		public async Task DeleteChatMessage(string channelID, string messageID)
+		{
+			Validator.ValidateString(channelID, "channelID");
+			Validator.ValidateString(messageID, "messageID");
+
+			await this.DeleteAsync("moderation/chat?broadcaster_id=" + channelID + "&moderator_id=" + channelID + "&message_id=" + messageID);
+		}
+
+		/// <summary>
+		/// Deletes the specified message in the broadcaster's chat room.
+		/// </summary>
+		/// <param name="channelID">The channel ID to delete message in</param>
+		/// <param name="moderatorID">The ID of the moderator deleting the message</param>
+		/// <param name="messageID">The message ID to delete</param>
+		public async Task DeleteChatMessage(string channelID, string moderatorID, string messageID)
         {
             Validator.ValidateString(channelID, "channelID");
             Validator.ValidateString(moderatorID, "moderatorID");
             Validator.ValidateString(messageID, "messageID");
 
             await this.DeleteAsync("moderation/chat?broadcaster_id=" + channelID + "&moderator_id=" + moderatorID + "&message_id=" + messageID);
-        }
+		}
 
-        /// <summary>
-        /// Clears chat for the broadcaster's chat room.
-        /// </summary>
-        /// <param name="channelID">The channel ID to clear chat for</param>
-        public async Task ClearChat(string channelID)
+		/// <summary>
+		/// Clears chat for the broadcaster's chat room.
+		/// </summary>
+		/// <param name="channelID">The channel ID to clear chat for</param>
+		/// <param name="moderatorID">The ID of the moderator clearing the chat</param>
+		public async Task ClearChat(string channelID, string moderatorID)
+		{
+			Validator.ValidateString(channelID, "channelID");
+            Validator.ValidateString(moderatorID, "moderatorID");
+
+			await this.DeleteAsync("moderation/chat?broadcaster_id=" + channelID + "&moderator_id=" + moderatorID);
+		}
+
+		/// <summary>
+		/// Clears chat for the broadcaster's chat room.
+		/// </summary>
+		/// <param name="channelID">The channel ID to clear chat for</param>
+		public async Task ClearChat(string channelID)
         {
             Validator.ValidateString(channelID, "channelID");
 

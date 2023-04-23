@@ -209,16 +209,30 @@ namespace Twitch.Base.Clients
             Validator.ValidateString(message, "message");
 
             await this.connection.NewAPI.Chat.SendWhisper(broadcaster.id, user.id, message);
-        }
+		}
 
-        /// <summary>
-        /// Deletes the specified message.
-        /// </summary>
-        /// <param name="broadcaster">The broadcaster's channel to use</param>
-        /// <param name="moderator">The moderator deleting the message</param>
-        /// <param name="messageID">The ID of the message to clear</param>
-        /// <returns>An awaitable Task</returns>
-        public async Task DeleteMessage(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator, string messageID)
+		/// <summary>
+		/// Deletes the specified message.
+		/// </summary>
+		/// <param name="broadcaster">The broadcaster's channel to use</param>
+		/// <param name="messageID">The ID of the message to clear</param>
+		/// <returns>An awaitable Task</returns>
+		public async Task DeleteMessage(NewAPI.Users.UserModel broadcaster, string messageID)
+		{
+			Validator.ValidateVariable(broadcaster, "broadcaster");
+			Validator.ValidateString(messageID, "messageID");
+
+			await this.connection.NewAPI.Chat.DeleteChatMessage(broadcaster.id, messageID);
+		}
+
+		/// <summary>
+		/// Deletes the specified message.
+		/// </summary>
+		/// <param name="broadcaster">The broadcaster's channel to use</param>
+		/// <param name="moderator">The moderator deleting the message</param>
+		/// <param name="messageID">The ID of the message to clear</param>
+		/// <returns>An awaitable Task</returns>
+		public async Task DeleteMessage(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator, string messageID)
         {
             Validator.ValidateVariable(broadcaster, "broadcaster");
             Validator.ValidateVariable(moderator, "moderator");
@@ -241,14 +255,28 @@ namespace Twitch.Base.Clients
             Validator.ValidateVariable(targetUser, "targetUser");
 
             await this.connection.NewAPI.Chat.TimeoutUser(broadcaster.id, targetUser.id, lengthInSeconds, reason);
-        }
+		}
 
-        /// <summary>
-        /// Clears all messages from chat.
-        /// </summary>
-        /// <param name="broadcaster">The broadcaster's channel to use</param>
-        /// <returns>An awaitable Task</returns>
-        public async Task ClearChat(NewAPI.Users.UserModel broadcaster)
+		/// <summary>
+		/// Clears all messages from chat.
+		/// </summary>
+		/// <param name="broadcaster">The broadcaster's channel to use</param>
+		/// <param name="moderator">The moderator clearing the chat</param>
+		/// <returns>An awaitable Task</returns>
+		public async Task ClearChat(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator)
+		{
+			Validator.ValidateVariable(broadcaster, "broadcaster");
+            Validator.ValidateVariable(moderator, "moderator");
+
+			await this.connection.NewAPI.Chat.ClearChat(broadcaster.id, moderator.id);
+		}
+
+		/// <summary>
+		/// Clears all messages from chat.
+		/// </summary>
+		/// <param name="broadcaster">The broadcaster's channel to use</param>
+		/// <returns>An awaitable Task</returns>
+		public async Task ClearChat(NewAPI.Users.UserModel broadcaster)
         {
             Validator.ValidateVariable(broadcaster, "broadcaster");
 
