@@ -36,25 +36,25 @@ namespace Twitch.Base.Models.Clients.Chat
 		{
 			if (packet.Parameters.Count > 1)
 			{
-				this.UserLogin = packet.Parameters.Last();
+				UserLogin = packet.Parameters.Last();
 			}
-			this.UserID = packet.GetTagString("target-user-id");
-			this.BanDuration = packet.GetTagLong("ban-duration");
+			UserID = packet.GetTagString("target-user-id");
+			BanDuration = packet.GetTagLong("ban-duration");
 		}
 
-		/// <summary>
-		/// Indicates if this was a regular chat clear and not directed at a specific user.
-		/// </summary>
-		public bool IsClear { get { return string.IsNullOrEmpty(this.UserID); } }
+        /// <summary>
+        /// Indicates if this was a regular chat clear and not directed at a specific user.
+        /// </summary>
+        public bool IsClear => string.IsNullOrEmpty(UserID);
 
-		/// <summary>
-		/// Indicates if this is a timeout of a specific user.
-		/// </summary>
-		public bool IsTimeout { get { return !string.IsNullOrEmpty(this.UserID) && this.BanDuration > 0; } }
+        /// <summary>
+        /// Indicates if this is a timeout of a specific user.
+        /// </summary>
+        public bool IsTimeout => !string.IsNullOrEmpty(UserID) && BanDuration > 0;
 
-		/// <summary>
-		/// Indicates if this is a ban of a specific user.
-		/// </summary>
-		public bool IsBan { get { return !string.IsNullOrEmpty(this.UserID) && this.BanDuration == 0; } }
-	}
+        /// <summary>
+        /// Indicates if this is a ban of a specific user.
+        /// </summary>
+        public bool IsBan => !string.IsNullOrEmpty(UserID) && BanDuration == 0;
+    }
 }

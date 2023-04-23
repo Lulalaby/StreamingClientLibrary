@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,27 +25,27 @@ namespace Twitch.Base.Services.NewAPI
 		/// Gets the current user.
 		/// </summary>
 		/// <returns>The resulting user</returns>
-		public async Task<UserModel> GetCurrentUser()
+		public async Task<UserModel> GetCurrentUserAsync()
 		{
-			IEnumerable<UserModel> users = await this.GetDataResultAsync<UserModel>("users");
-			return (users != null) ? users.FirstOrDefault() : null;
+			IEnumerable<UserModel> users = await GetDataResultAsync<UserModel>("users");
+			return users?.FirstOrDefault();
 		}
 
-		/// <summary>
-		/// Gets the user.
-		/// </summary>
-		/// <param name="user">The user to get</param>
-		/// <returns>The resulting user</returns>
-		public async Task<UserModel> GetUser(UserModel user) { return await this.GetUserByID(user.id); }
+        /// <summary>
+        /// Gets the user.
+        /// </summary>
+        /// <param name="user">The user to get</param>
+        /// <returns>The resulting user</returns>
+        public async Task<UserModel> GetUserAsync(UserModel user) => await GetUserByIDAsync(user.id);
 
-		/// <summary>
-		/// Gets a user by their user ID.
-		/// </summary>
-		/// <param name="userID">The ID of the user</param>
-		/// <returns>The user associated with the ID</returns>
-		public async Task<UserModel> GetUserByID(string userID)
+        /// <summary>
+        /// Gets a user by their user ID.
+        /// </summary>
+        /// <param name="userID">The ID of the user</param>
+        /// <returns>The user associated with the ID</returns>
+        public async Task<UserModel> GetUserByIDAsync(string userID)
 		{
-			IEnumerable<UserModel> users = await this.GetUsersByID(new List<string>() { userID });
+			IEnumerable<UserModel> users = await GetUsersByIDAsync(new List<string>() { userID });
 			return users.FirstOrDefault();
 		}
 
@@ -54,39 +54,39 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="login">The login of the user</param>
 		/// <returns>The user associated with the login</returns>
-		public async Task<UserModel> GetUserByLogin(string login)
+		public async Task<UserModel> GetUserByLoginAsync(string login)
 		{
-			IEnumerable<UserModel> users = await this.GetUsersByLogin(new List<string>() { login });
+			IEnumerable<UserModel> users = await GetUsersByLoginAsync(new List<string>() { login });
 			return users.FirstOrDefault();
 		}
 
-		/// <summary>
-		/// Gets the users by their user IDs.
-		/// </summary>
-		/// <param name="userIDs">The IDs of the users</param>
-		/// <returns>The users associated with the IDs</returns>
-		public async Task<IEnumerable<UserModel>> GetUsersByID(IEnumerable<string> userIDs) { return await this.GetUsers(userIDs, new List<string>()); }
+        /// <summary>
+        /// Gets the users by their user IDs.
+        /// </summary>
+        /// <param name="userIDs">The IDs of the users</param>
+        /// <returns>The users associated with the IDs</returns>
+        public async Task<IEnumerable<UserModel>> GetUsersByIDAsync(IEnumerable<string> userIDs) => await GetUsersAsync(userIDs, new List<string>());
 
-		/// <summary>
-		/// Gets the users by their logins.
-		/// </summary>
-		/// <param name="logins">The logins of the users</param>
-		/// <returns>The users associated with the logins</returns>
-		public async Task<IEnumerable<UserModel>> GetUsersByLogin(IEnumerable<string> logins) { return await this.GetUsers(new List<string>(), logins); }
+        /// <summary>
+        /// Gets the users by their logins.
+        /// </summary>
+        /// <param name="logins">The logins of the users</param>
+        /// <returns>The users associated with the logins</returns>
+        public async Task<IEnumerable<UserModel>> GetUsersByLoginAsync(IEnumerable<string> logins) => await GetUsersAsync(new List<string>(), logins);
 
-		/// <summary>
-		/// Gets the users by their user IDs &amp; logins.
-		/// </summary>
-		/// <param name="userIDs">The IDs of the users</param>
-		/// <param name="logins">The logins of the users</param>
-		/// <returns>The users associated with the IDs &amp; logins</returns>
-		public async Task<IEnumerable<UserModel>> GetUsers(IEnumerable<string> userIDs, IEnumerable<string> logins)
+        /// <summary>
+        /// Gets the users by their user IDs &amp; logins.
+        /// </summary>
+        /// <param name="userIDs">The IDs of the users</param>
+        /// <param name="logins">The logins of the users</param>
+        /// <returns>The users associated with the IDs &amp; logins</returns>
+        public async Task<IEnumerable<UserModel>> GetUsersAsync(IEnumerable<string> userIDs, IEnumerable<string> logins)
 		{
 			Validator.ValidateVariable(userIDs, "userIDs");
 			Validator.ValidateVariable(logins, "logins");
-			Validator.Validate((userIDs.Count() > 0 || logins.Count() > 0), "At least one userID or login must be specified");
+			Validator.Validate(userIDs.Any() || logins.Any(), "At least one userID or login must be specified");
 
-			List<string> parameters = new List<string>();
+			List<string> parameters = new();
 			foreach (string userID in userIDs)
 			{
 				parameters.Add("id=" + userID);
@@ -96,7 +96,7 @@ namespace Twitch.Base.Services.NewAPI
 				parameters.Add("login=" + login);
 			}
 
-			return await this.GetDataResultAsync<UserModel>("users?" + string.Join("&", parameters));
+			return await GetDataResultAsync<UserModel>("users?" + string.Join("&", parameters));
 		}
 
 		/// <summary>
@@ -104,33 +104,33 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="user">The user to search for who they follow</param>
 		/// <returns>The total number of followers</returns>
-		public async Task<long> GetFollowerCount(UserModel user)
+		public async Task<long> GetFollowerCountAsync(UserModel user)
 		{
 			Validator.ValidateVariable(user, "user");
-			return await this.GetPagedResultTotalCountAsync("users/follows?to_id=" + user.id);
+			return await GetPagedResultTotalCountAsync("users/follows?to_id=" + user.id);
 		}
 
-		/// <summary>
-		/// Gets follower information for and/or to a user.
-		/// </summary>
-		/// <param name="from">The user to search for who they follow</param>
-		/// <param name="to">The user to search for who follows them</param>
-		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
-		/// <returns>The follow information</returns>
-		public async Task<IEnumerable<UserFollowModel>> GetFollows(UserModel from = null, UserModel to = null, int maxResults = 1) { return await this.GetFollows(from?.id, to?.id, maxResults); }
+        /// <summary>
+        /// Gets follower information for and/or to a user.
+        /// </summary>
+        /// <param name="from">The user to search for who they follow</param>
+        /// <param name="to">The user to search for who follows them</param>
+        /// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
+        /// <returns>The follow information</returns>
+        public async Task<IEnumerable<UserFollowModel>> GetFollowsAsync(UserModel from = null, UserModel to = null, int maxResults = 1) => await GetFollowsAsync(from?.id, to?.id, maxResults);
 
-		/// <summary>
-		/// Gets follower information for and/or to a user.
-		/// </summary>
-		/// <param name="fromID">The user to search for who they follow</param>
-		/// <param name="toID">The user to search for who follows them</param>
-		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
-		/// <returns>The follow information</returns>
-		public async Task<IEnumerable<UserFollowModel>> GetFollows(string fromID = null, string toID = null, int maxResults = 1)
+        /// <summary>
+        /// Gets follower information for and/or to a user.
+        /// </summary>
+        /// <param name="fromID">The user to search for who they follow</param>
+        /// <param name="toID">The user to search for who follows them</param>
+        /// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
+        /// <returns>The follow information</returns>
+        public async Task<IEnumerable<UserFollowModel>> GetFollowsAsync(string fromID = null, string toID = null, int maxResults = 1)
 		{
 			Validator.Validate(!string.IsNullOrEmpty(fromID) || !string.IsNullOrEmpty(toID), "At least either fromID or toID must be specified");
 
-			Dictionary<string, string> queryParameters = new Dictionary<string, string>();
+			Dictionary<string, string> queryParameters = new();
 			if (!string.IsNullOrEmpty(fromID))
 			{
 				queryParameters.Add("from_id", fromID);
@@ -140,7 +140,7 @@ namespace Twitch.Base.Services.NewAPI
 				queryParameters.Add("to_id", toID);
 			}
 
-			return await this.GetPagedDataResultAsync<UserFollowModel>("users/follows?" + string.Join("&", queryParameters.Select(kvp => kvp.Key + "=" + kvp.Value)), maxResults);
+			return await GetPagedDataResultAsync<UserFollowModel>("users/follows?" + string.Join("&", queryParameters.Select(kvp => kvp.Key + "=" + kvp.Value)), maxResults);
 		}
 
 		/// <summary>
@@ -148,14 +148,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="description">The description to set</param>
 		/// <returns>The updated current user</returns>
-		public async Task<UserModel> UpdateCurrentUserDescription(string description)
+		public async Task<UserModel> UpdateCurrentUserDescriptionAsync(string description)
 		{
-			NewTwitchAPIDataRestResult<UserModel> result = await this.PutAsync<NewTwitchAPIDataRestResult<UserModel>>("users?description=" + AdvancedHttpClient.URLEncodeString(description));
-			if (result != null && result.data != null)
-			{
-				return result.data.FirstOrDefault();
-			}
-			return null;
-		}
-	}
+			NewTwitchAPIDataRestResult<UserModel> result = await PutAsync<NewTwitchAPIDataRestResult<UserModel>>("users?description=" + AdvancedHttpClient.URLEncodeString(description));
+            return result != null && result.data != null ? result.data.FirstOrDefault() : null;
+        }
+    }
 }

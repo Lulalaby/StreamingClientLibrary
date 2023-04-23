@@ -65,33 +65,33 @@ namespace Twitch.Base.Models.NewAPI.Bits
 		/// </summary>
 		public JObject images { get; set; }
 
-		/// <summary>
-		/// Gets the dark, animated images.
-		/// </summary>
-		public Dictionary<string, string> DarkAnimatedImages { get { return this.GetCheermoteImages("dark", "animated"); } }
-		/// <summary>
-		/// Gets the dark, static images.
-		/// </summary>
-		public Dictionary<string, string> DarkStaticImages { get { return this.GetCheermoteImages("dark", "static"); } }
-		/// <summary>
-		/// Gets the light, animated images.
-		/// </summary>
-		public Dictionary<string, string> LightAnimatedImages { get { return this.GetCheermoteImages("light", "animated"); } }
-		/// <summary>
-		/// Gets the light, static images.
-		/// </summary>
-		public Dictionary<string, string> LightStaticImages { get { return this.GetCheermoteImages("light", "static"); } }
+        /// <summary>
+        /// Gets the dark, animated images.
+        /// </summary>
+        public Dictionary<string, string> DarkAnimatedImages => GetCheermoteImages("dark", "animated");
+        /// <summary>
+        /// Gets the dark, static images.
+        /// </summary>
+        public Dictionary<string, string> DarkStaticImages => GetCheermoteImages("dark", "static");
+        /// <summary>
+        /// Gets the light, animated images.
+        /// </summary>
+        public Dictionary<string, string> LightAnimatedImages => GetCheermoteImages("light", "animated");
+        /// <summary>
+        /// Gets the light, static images.
+        /// </summary>
+        public Dictionary<string, string> LightStaticImages => GetCheermoteImages("light", "static");
 
-		private Dictionary<string, string> GetCheermoteImages(string color, string imageType)
+        private Dictionary<string, string> GetCheermoteImages(string color, string imageType)
 		{
-			Dictionary<string, string> results = new Dictionary<string, string>();
-			if (this.images != null && this.images.ContainsKey(color))
+			Dictionary<string, string> results = new();
+			if (images != null && images.ContainsKey(color))
 			{
-				JObject colorJObj = (JObject)this.images[color];
+				JObject colorJObj = (JObject)images[color];
 				if (colorJObj != null && colorJObj.ContainsKey(imageType))
 				{
 					JObject imageTypeJObj = (JObject)colorJObj[imageType];
-					foreach (var kvp in imageTypeJObj)
+					foreach (KeyValuePair<string, JToken> kvp in imageTypeJObj)
 					{
 						results[kvp.Key] = kvp.Value.ToString();
 					}

@@ -37,33 +37,33 @@ namespace Twitch.Base.Models.Clients.Chat
 		/// </summary>
 		public List<string> Parameters { get; set; }
 
-		/// <summary>
-		/// Gets the user login associated with the packet.
-		/// </summary>
-		[JsonIgnore]
-		public string GetUserLogin { get { return this.Prefix.Substring(0, this.Prefix.IndexOf("!")); } }
+        /// <summary>
+        /// Gets the user login associated with the packet.
+        /// </summary>
+        [JsonIgnore]
+        public string GetUserLogin => Prefix[..Prefix.IndexOf("!")];
 
-		/// <summary>
-		/// Gets the entire set of parameters concatenated into one string, minus the first parameter.
-		/// </summary>
-		[JsonIgnore]
-		public string Get1SkippedParameterText { get { return string.Join(" ", this.Parameters.Skip(1)); } }
+        /// <summary>
+        /// Gets the entire set of parameters concatenated into one string, minus the first parameter.
+        /// </summary>
+        [JsonIgnore]
+        public string Get1SkippedParameterText => string.Join(" ", Parameters.Skip(1));
 
-		/// <summary>
-		/// Gets the tag value associated with the specified key
-		/// </summary>
-		/// <param name="key">The key to look up</param>
-		/// <returns>The value associated with the specified key</returns>
-		public string GetTagString(string key) { return this.Tags.GetOrDefault(key); }
+        /// <summary>
+        /// Gets the tag value associated with the specified key
+        /// </summary>
+        /// <param name="key">The key to look up</param>
+        /// <returns>The value associated with the specified key</returns>
+        public string GetTagString(string key) => Tags.GetOrDefault(key);
 
-		/// <summary>
-		/// Gets the tag value associated with the specified key
-		/// </summary>
-		/// <param name="key">The key to look up</param>
-		/// <returns>The value associated with the specified key</returns>
-		public int GetTagInt(string key)
+        /// <summary>
+        /// Gets the tag value associated with the specified key
+        /// </summary>
+        /// <param name="key">The key to look up</param>
+        /// <returns>The value associated with the specified key</returns>
+        public int GetTagInt(string key)
 		{
-			string value = this.GetTagString(key);
+			string value = GetTagString(key);
 			int.TryParse(value, out int result);
 			return result;
 		}
@@ -75,7 +75,7 @@ namespace Twitch.Base.Models.Clients.Chat
 		/// <returns>The value associated with the specified key</returns>
 		public long GetTagLong(string key)
 		{
-			string value = this.GetTagString(key);
+			string value = GetTagString(key);
 			long.TryParse(value, out long result);
 			return result;
 		}
@@ -87,7 +87,7 @@ namespace Twitch.Base.Models.Clients.Chat
 		/// <returns>The value associated with the specified key</returns>
 		public bool GetTagBool(string key)
 		{
-			string value = this.GetTagString(key);
+			string value = GetTagString(key);
 			int.TryParse(value, out int result);
 			return result == 1;
 		}

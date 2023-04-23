@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 using StreamingClient.Base.Util;
 
@@ -25,7 +25,7 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="broadcaster">broadcaster</param>
 		/// <param name="maxResults">Maximum schedule segment results to return. Will be either that amount or slightly more.</param>
 		/// <returns>Broadcaster's schedule details</returns>
-		public async Task<ScheduleModel> GetSchedule(UserModel broadcaster, int maxResults)
+		public async Task<ScheduleModel> GetScheduleAsync(UserModel broadcaster, int maxResults)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 
@@ -34,10 +34,10 @@ namespace Twitch.Base.Services.NewAPI
 
 			do
 			{
-				int totalSegmentCount = (scheduleModel?.segments?.Count ?? 0);
+				int totalSegmentCount = scheduleModel?.segments?.Count ?? 0;
 				int itemsToRetrieve = maxResults - totalSegmentCount > 25 ? 25 : maxResults - totalSegmentCount;
 
-				NewTwitchAPISingleDataRestResult<ScheduleModel> results = await this.GetPagedSingleDataResultAsync<ScheduleModel>("schedule?broadcaster_id=" + broadcaster.id, itemsToRetrieve, cursor);
+				NewTwitchAPISingleDataRestResult<ScheduleModel> results = await GetPagedSingleDataResultAsync<ScheduleModel>("schedule?broadcaster_id=" + broadcaster.id, itemsToRetrieve, cursor);
 				cursor = results.Cursor;
 
 				if (results.data != null)

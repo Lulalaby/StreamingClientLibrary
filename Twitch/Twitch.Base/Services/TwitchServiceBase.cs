@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 using StreamingClient.Base.Model.OAuth;
 using StreamingClient.Base.Services;
@@ -12,10 +12,10 @@ namespace Twitch.Base.Services
 	/// </summary>
 	public class TwitchServiceBase : OAuthRestServiceBase
 	{
-		private TwitchConnection connection;
-		private string baseAddress;
+		private readonly TwitchConnection connection;
+		private readonly string baseAddress;
 
-		private string clientID;
+		private readonly string clientID;
 
 		/// <summary>
 		/// Creates an instance of the TwitchServiceBase.
@@ -27,47 +27,37 @@ namespace Twitch.Base.Services
 			Validator.ValidateVariable(connection, "connection");
 			this.connection = connection;
 			this.baseAddress = baseAddress;
-			this.clientID = connection.ClientID;
+			clientID = connection.ClientID;
 		}
 
-		internal TwitchServiceBase(string baseAddress)
-		{
-			this.baseAddress = baseAddress;
-		}
+        internal TwitchServiceBase(string baseAddress) => this.baseAddress = baseAddress;
 
-		/// <summary>
-		/// Gets the HttpClient using the OAuth for the connection of this service.
-		/// </summary>
-		/// <param name="autoRefreshToken">Whether to automatically refresh the OAuth token or not if it has to be</param>
-		/// <returns>The HttpClient for the connection</returns>
-		protected override async Task<AdvancedHttpClient> GetHttpClient(bool autoRefreshToken = true)
+        /// <summary>
+        /// Gets the HttpClient using the OAuth for the connection of this service.
+        /// </summary>
+        /// <param name="autoRefreshToken">Whether to automatically refresh the OAuth token or not if it has to be</param>
+        /// <returns>The HttpClient for the connection</returns>
+        protected override async Task<AdvancedHttpClient> GetHttpClientAsync(bool autoRefreshToken = true)
 		{
-			AdvancedHttpClient client = await base.GetHttpClient(autoRefreshToken);
-			if (!string.IsNullOrEmpty(this.clientID))
+			AdvancedHttpClient client = await base.GetHttpClientAsync(autoRefreshToken);
+			if (!string.IsNullOrEmpty(clientID))
 			{
-				client.DefaultRequestHeaders.Add("Client-ID", this.clientID);
+				client.DefaultRequestHeaders.Add("Client-ID", clientID);
 			}
 			return client;
 		}
 
-		/// <summary>
-		/// Gets the OAuth token for the connection of this service.
-		/// </summary>
-		/// <param name="autoRefreshToken">Whether to automatically refresh the OAuth token or not if it has to be</param>
-		/// <returns>The OAuth token for the connection</returns>
-		protected override async Task<OAuthTokenModel> GetOAuthToken(bool autoRefreshToken = true)
-		{
-			if (this.connection != null)
-			{
-				return await this.connection.GetOAuthToken(autoRefreshToken);
-			}
-			return null;
-		}
+        /// <summary>
+        /// Gets the OAuth token for the connection of this service.
+        /// </summary>
+        /// <param name="autoRefreshToken">Whether to automatically refresh the OAuth token or not if it has to be</param>
+        /// <returns>The OAuth token for the connection</returns>
+        protected override async Task<OAuthTokenModel> GetOAuthToken(bool autoRefreshToken = true) => connection != null ? await connection.GetOAuthTokenAsync(autoRefreshToken) : null;
 
-		/// <summary>
-		/// Gets the base address for all RESTful calls for this service.
-		/// </summary>
-		/// <returns>The base address for all RESTful calls</returns>
-		protected override string GetBaseAddress() { return this.baseAddress; }
-	}
+        /// <summary>
+        /// Gets the base address for all RESTful calls for this service.
+        /// </summary>
+        /// <returns>The base address for all RESTful calls</returns>
+        protected override string GetBaseAddress() => baseAddress;
+    }
 }

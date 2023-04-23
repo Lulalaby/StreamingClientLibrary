@@ -52,13 +52,13 @@
 		/// </summary>
 		public string created_at { get; set; }
 
-		/// <summary>
-		/// Gets the current thumbnail preview image for the user's channel in a large size.
-		/// </summary>
-		public string ThumbnailPreviewLarge { get { return string.Format(ThumbnailPreviewURLFormat, this.login, ""); } }
-		/// <summary>
-		/// Gets the current thumbnail preview image for the user's channel in a small size.
-		/// </summary>
-		public string ThumbnailPreviewSmall { get { return string.Format(ThumbnailPreviewURLFormat, this.login, "-640x360"); } }
-	}
+        /// <summary>
+        /// Gets the current thumbnail preview image for the user's channel in a large size.
+        /// </summary>
+        public string ThumbnailPreviewLarge => string.Format(ThumbnailPreviewURLFormat, login, "");
+        /// <summary>
+        /// Gets the current thumbnail preview image for the user's channel in a small size.
+        /// </summary>
+        public string ThumbnailPreviewSmall => string.Format(ThumbnailPreviewURLFormat, login, "-640x360");
+    }
 }

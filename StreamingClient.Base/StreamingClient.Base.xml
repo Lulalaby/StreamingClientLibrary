@@ -232,7 +232,7 @@
             </summary>
             <returns>The base address for all RESTful calls</returns>
         </member>
-        <member name="M:StreamingClient.Base.Services.OAuthRestServiceBase.GetHttpClient(System.Boolean)">
+        <member name="M:StreamingClient.Base.Services.OAuthRestServiceBase.GetHttpClientAsync(System.Boolean)">
             <summary>
             Gets the HttpClient using the OAuth for the connection of this service.
             </summary>
@@ -425,7 +425,7 @@
             <param name="name">The name of the header</param>
             <returns>The first value of the specified header if it exists</returns>
         </member>
-        <member name="M:StreamingClient.Base.Util.HttpResponseMessageExtensions.ProcessResponse``1(System.Net.Http.HttpResponseMessage,System.Boolean)">
+        <member name="M:StreamingClient.Base.Util.HttpResponseMessageExtensions.ProcessResponseAsync``1(System.Net.Http.HttpResponseMessage,System.Boolean)">
             <summary>
             Processes and deserializes the HttpResponse into a type-casted object.
             </summary>
@@ -433,7 +433,7 @@
             <param name="throwExceptionOnFailure">Throws an exception on a failed request</param>
             <returns>A type-casted object of the contents of the response</returns>
         </member>
-        <member name="M:StreamingClient.Base.Util.HttpResponseMessageExtensions.ProcessJObjectResponse(System.Net.Http.HttpResponseMessage,System.Boolean)">
+        <member name="M:StreamingClient.Base.Util.HttpResponseMessageExtensions.ProcessJObjectResponseAsync(System.Net.Http.HttpResponseMessage,System.Boolean)">
             <summary>
             Processes and deserializes the HttpResponse into a JObject.
             </summary>
@@ -441,7 +441,7 @@
             <param name="throwExceptionOnFailure">Throws an exception on a failed request</param>
             <returns>A JObject of the contents of the response</returns>
         </member>
-        <member name="M:StreamingClient.Base.Util.HttpResponseMessageExtensions.ProcessStringResponse(System.Net.Http.HttpResponseMessage,System.Boolean)">
+        <member name="M:StreamingClient.Base.Util.HttpResponseMessageExtensions.ProcessStringResponseAsync(System.Net.Http.HttpResponseMessage,System.Boolean)">
             <summary>
             Processes and deserializes the HttpResponse into a string.
             </summary>
@@ -730,7 +730,7 @@
             Extension methods for the SemaphoreSlim class.
             </summary>
         </member>
-        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndRelease(System.Threading.SemaphoreSlim,System.Threading.Tasks.Task)">
+        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndReleaseAsync(System.Threading.SemaphoreSlim,System.Threading.Tasks.Task)">
             <summary>
             Awaits on a semaphore, awaits the specified task, &amp; then releases the semaphore.
             </summary>
@@ -738,7 +738,7 @@
             <param name="task">The task to await</param>
             <returns>An awaitable task</returns>
         </member>
-        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndRelease``1(System.Threading.SemaphoreSlim,System.Threading.Tasks.Task{``0})">
+        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndReleaseAsync``1(System.Threading.SemaphoreSlim,System.Threading.Tasks.Task{``0})">
             <summary>
             Awaits on a semaphore, awaits the specified task, &amp; then releases the semaphore.
             </summary>
@@ -746,7 +746,7 @@
             <param name="task">The task to await</param>
             <returns>An awaitable task of type T</returns>
         </member>
-        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndRelease(System.Threading.SemaphoreSlim,System.Func{System.Threading.Tasks.Task})">
+        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndReleaseAsync(System.Threading.SemaphoreSlim,System.Func{System.Threading.Tasks.Task})">
             <summary>
             Awaits on a semaphore, runs the specified function, &amp; then releases the semaphore.
             </summary>
@@ -754,7 +754,7 @@
             <param name="function">The function to run</param>
             <returns>An awaitable task</returns>
         </member>
-        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndRelease``1(System.Threading.SemaphoreSlim,System.Func{System.Threading.Tasks.Task{``0}})">
+        <member name="M:StreamingClient.Base.Util.SemaphoreSlimExtensions.WaitAndReleaseAsync``1(System.Threading.SemaphoreSlim,System.Func{System.Threading.Tasks.Task{``0}})">
             <summary>
             Awaits on a semaphore, runs the specified function, &amp; then releases the semaphore.
             </summary>
@@ -1101,7 +1101,7 @@
             <param name="content">The content to send</param>
             <returns>A type-casted object of the contents of the response</returns>
         </member>
-        <member name="M:StreamingClient.Base.Web.AdvancedHttpClient.DeleteAsyncWithResponse(System.String,System.Net.Http.HttpContent)">
+        <member name="M:StreamingClient.Base.Web.AdvancedHttpClient.DeleteAsyncWithResponseAsync(System.String,System.Net.Http.HttpContent)">
             <summary>
             Performs a DELETE REST request using the provided request URI.
             </summary>
@@ -1119,14 +1119,14 @@
             The web socket connection.
             </summary>
         </member>
-        <member name="M:StreamingClient.Base.Web.ClientWebSocketBase.Connect(System.String)">
+        <member name="M:StreamingClient.Base.Web.ClientWebSocketBase.ConnectAsync(System.String)">
             <summary>
             Connects the web socket to the server.
             </summary>
             <param name="endpoint">The endpoint to connect to</param>
             <returns>Whether the connection was successful</returns>
         </member>
-        <member name="M:StreamingClient.Base.Web.ClientWebSocketBase.SendInternal(System.Byte[])">
+        <member name="M:StreamingClient.Base.Web.ClientWebSocketBase.SendInternalAsync(System.Byte[])">
             <summary>
             Sends the packet of data.
             </summary>
@@ -1176,14 +1176,14 @@
             <param name="parameter">The name of the parameter</param>
             <returns>The parameter value of the request</returns>
         </member>
-        <member name="M:StreamingClient.Base.Web.LocalHttpListenerServer.GetRequestContent(System.Net.HttpListenerContext)">
+        <member name="M:StreamingClient.Base.Web.LocalHttpListenerServer.GetRequestContentAsync(System.Net.HttpListenerContext)">
             <summary>
             Gets the content of the request. 
             </summary>
             <param name="listenerContext">The request context</param>
             <returns>The content of the request</returns>
         </member>
-        <member name="M:StreamingClient.Base.Web.LocalHttpListenerServer.CloseConnection(System.Net.HttpListenerContext,System.Net.HttpStatusCode,System.String)">
+        <member name="M:StreamingClient.Base.Web.LocalHttpListenerServer.CloseConnectionAsync(System.Net.HttpListenerContext,System.Net.HttpStatusCode,System.String)">
             <summary>
             Closes the connection of the request.
             </summary>
@@ -1210,7 +1210,7 @@
             <param name="authorizationCodeParameterName">The name of the parameter for the authorization code</param>
             <param name="successResponse">The response to send upon successfully obtaining an authorization token</param>
         </member>
-        <member name="M:StreamingClient.Base.Web.LocalOAuthHttpListenerServer.WaitForAuthorizationCode(System.Int32)">
+        <member name="M:StreamingClient.Base.Web.LocalOAuthHttpListenerServer.WaitForAuthorizationCodeAsync(System.Int32)">
             <summary>
             Waits for a successful authorization response from the OAuth service.
             </summary>
@@ -1266,7 +1266,7 @@
             <param name="closeStatus">Optional status to send to partner web socket as to why the web socket is being closed</param>
             <returns>A task for the closing of the web socket</returns>
         </member>
-        <member name="M:StreamingClient.Base.Web.WebSocketBase.Send(System.String)">
+        <member name="M:StreamingClient.Base.Web.WebSocketBase.SendAsync(System.String)">
             <summary>
             Sends a text packet to the connected web socket.
             </summary>
@@ -1298,7 +1298,7 @@
             </summary>
             <param name="webSocket">The web socket connection</param>
         </member>
-        <member name="M:StreamingClient.Base.Web.WebSocketBase.SendInternal(System.Byte[])">
+        <member name="M:StreamingClient.Base.Web.WebSocketBase.SendInternalAsync(System.Byte[])">
             <summary>
             Sends the packet of data.
             </summary>
@@ -1312,7 +1312,7 @@
             <param name="packet">The receive text packet</param>
             <returns>An awaitable task</returns>
         </member>
-        <member name="M:StreamingClient.Base.Web.WebSocketBase.Receive">
+        <member name="M:StreamingClient.Base.Web.WebSocketBase.ReceiveAsync">
             <summary>
             Handles all receiving &amp; processing of packets.
             </summary>
@@ -1324,14 +1324,14 @@
             </summary>
             <param name="jsonBuffer">The contents of the text buffer.</param>
         </member>
-        <member name="M:StreamingClient.Base.Web.WebSocketBase.DisconnectAndFireEvent(System.Net.WebSockets.WebSocketCloseStatus)">
+        <member name="M:StreamingClient.Base.Web.WebSocketBase.DisconnectAndFireEventAsync(System.Net.WebSockets.WebSocketCloseStatus)">
             <summary>
             Disconnects the web socket connection and fires a disconnection event.
             </summary>
             <param name="closeStatus">The close status of the web socket connection</param>
             <returns>An awaitable task</returns>
         </member>
-        <member name="M:StreamingClient.Base.Web.WebSocketBase.WaitForSuccess(System.Func{System.Boolean},System.Int32)">
+        <member name="M:StreamingClient.Base.Web.WebSocketBase.WaitForSuccessAsync(System.Func{System.Boolean},System.Int32)">
             <summary>
             Waits for an successful operation to complete.
             </summary>

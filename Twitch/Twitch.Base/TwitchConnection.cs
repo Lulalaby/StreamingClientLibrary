@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -344,28 +344,28 @@ namespace Twitch.Base
 		/// </summary>
 		public NewTwitchAPIServices NewAPI { get; private set; }
 
-		/// <summary>
-		/// The Client ID associated with the connection.
-		/// </summary>
-		public string ClientID { get { return (this.token != null) ? this.token.clientID : null; } }
+        /// <summary>
+        /// The Client ID associated with the connection.
+        /// </summary>
+        public string ClientID => token?.clientID;
 
-		/// <summary>
-		/// Generates the OAuth authorization URL to use for authentication.
-		/// </summary>
-		/// <param name="clientID">The ID of the client application</param>
-		/// <param name="scopes">The authorization scopes to request</param>
-		/// <param name="redirectUri">The redirect URL for the client application</param>
-		/// <param name="forceApprovalPrompt">Whether to force an approval from the user</param>
-		/// <returns>The authorization URL</returns>
-		public static async Task<string> GetAuthorizationCodeURLForOAuthBrowser(string clientID, IEnumerable<OAuthClientScopeEnum> scopes, string redirectUri, bool forceApprovalPrompt = false)
+        /// <summary>
+        /// Generates the OAuth authorization URL to use for authentication.
+        /// </summary>
+        /// <param name="clientID">The ID of the client application</param>
+        /// <param name="scopes">The authorization scopes to request</param>
+        /// <param name="redirectUri">The redirect URL for the client application</param>
+        /// <param name="forceApprovalPrompt">Whether to force an approval from the user</param>
+        /// <returns>The authorization URL</returns>
+        public static async Task<string> GetAuthorizationCodeURLForOAuthBrowserAsync(string clientID, IEnumerable<OAuthClientScopeEnum> scopes, string redirectUri, bool forceApprovalPrompt = false)
 		{
 			Validator.ValidateString(clientID, "clientID");
 			Validator.ValidateList(scopes, "scopes");
 			Validator.ValidateString(redirectUri, "redirectUri");
-			Dictionary<string, string> parameters = new Dictionary<string, string>()
+			Dictionary<string, string> parameters = new()
 			{
 				{ "client_id", clientID },
-				{ "scope", TwitchConnection.ConvertClientScopesToString(scopes) },
+				{ "scope", ConvertClientScopesToString(scopes) },
 				{ "response_type", "code" },
 				{ "redirect_uri", redirectUri },
 			};
@@ -375,7 +375,7 @@ namespace Twitch.Base
 				parameters.Add("force_verify", "true");
 			}
 
-			FormUrlEncodedContent content = new FormUrlEncodedContent(parameters.AsEnumerable());
+			FormUrlEncodedContent content = new(parameters.AsEnumerable());
 
 			return "https://id.twitch.tv/oauth2/authorize?" + await content.ReadAsStringAsync();
 		}
@@ -386,19 +386,19 @@ namespace Twitch.Base
 		/// <param name="clientID">The ID of the client application</param>
 		/// <param name="clientSecret">The secret of the client application</param>
 		/// <returns>The token URL</returns>
-		public static async Task<string> GetTokenURLForAppAccess(string clientID, string clientSecret)
+		public static async Task<string> GetTokenURLForAppAccessAsync(string clientID, string clientSecret)
 		{
 			Validator.ValidateString(clientID, "clientID");
 			Validator.ValidateString(clientSecret, "clientSecret");
 
-			Dictionary<string, string> parameters = new Dictionary<string, string>()
+			Dictionary<string, string> parameters = new()
 			{
 				{ "client_id", clientID },
 				{ "client_secret", clientSecret },
 				{ "grant_type", "client_credentials" }
 			};
 
-			FormUrlEncodedContent content = new FormUrlEncodedContent(parameters.AsEnumerable());
+			FormUrlEncodedContent content = new(parameters.AsEnumerable());
 
 			return "https://id.twitch.tv/oauth2/token?" + await content.ReadAsStringAsync();
 		}
@@ -413,65 +413,59 @@ namespace Twitch.Base
 		/// <param name="oauthListenerURL">The URL to listen for the OAuth successful authentication</param>
 		/// <param name="successResponse">The response to send back upon successful authentication</param>
 		/// <returns>The TwitchConnection object</returns>
-		public static async Task<TwitchConnection> ConnectViaLocalhostOAuthBrowser(string clientID, string clientSecret, IEnumerable<OAuthClientScopeEnum> scopes, bool forceApprovalPrompt = false, string oauthListenerURL = DEFAULT_OAUTH_LOCALHOST_URL, string successResponse = null)
+		public static async Task<TwitchConnection> ConnectViaLocalhostOAuthBrowserAsync(string clientID, string clientSecret, IEnumerable<OAuthClientScopeEnum> scopes, bool forceApprovalPrompt = false, string oauthListenerURL = DEFAULT_OAUTH_LOCALHOST_URL, string successResponse = null)
 		{
 			Validator.ValidateString(clientID, "clientID");
 			Validator.ValidateList(scopes, "scopes");
 
-			LocalOAuthHttpListenerServer oauthServer = new LocalOAuthHttpListenerServer(DEFAULT_AUTHORIZATION_CODE_URL_PARAMETER, successResponse);
+			LocalOAuthHttpListenerServer oauthServer = new(DEFAULT_AUTHORIZATION_CODE_URL_PARAMETER, successResponse);
 			oauthServer.Start(oauthListenerURL);
 
-			string url = await TwitchConnection.GetAuthorizationCodeURLForOAuthBrowser(clientID, scopes, oauthListenerURL, forceApprovalPrompt);
-			ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = url, UseShellExecute = true };
+			string url = await GetAuthorizationCodeURLForOAuthBrowserAsync(clientID, scopes, oauthListenerURL, forceApprovalPrompt);
+			ProcessStartInfo startInfo = new() { FileName = url, UseShellExecute = true };
 			Process.Start(startInfo);
 
-			string authorizationCode = await oauthServer.WaitForAuthorizationCode();
+			string authorizationCode = await oauthServer.WaitForAuthorizationCodeAsync();
 			oauthServer.Stop();
 
-			if (authorizationCode != null)
-			{
-				return await TwitchConnection.ConnectViaAuthorizationCode(clientID, clientSecret, authorizationCode, redirectUrl: oauthListenerURL);
-			}
-			return null;
-		}
+            return authorizationCode != null
+                ? await ConnectViaAuthorizationCodeAsync(clientID, clientSecret, authorizationCode, redirectUrl: oauthListenerURL)
+                : null;
+        }
 
-		/// <summary>
-		/// Creates a TwitchConnection object from an authorization code.
-		/// </summary>
-		/// <param name="clientID">The ID of the client application</param>
-		/// <param name="clientSecret">The secret of the client application</param>
-		/// <param name="authorizationCode">The authorization code for the authenticated user</param>
-		/// <param name="redirectUrl">The redirect URL of the client application</param>
-		/// <returns>The TwitchConnection object</returns>
-		public static async Task<TwitchConnection> ConnectViaAuthorizationCode(string clientID, string clientSecret, string authorizationCode, string redirectUrl = null)
+        /// <summary>
+        /// Creates a TwitchConnection object from an authorization code.
+        /// </summary>
+        /// <param name="clientID">The ID of the client application</param>
+        /// <param name="clientSecret">The secret of the client application</param>
+        /// <param name="authorizationCode">The authorization code for the authenticated user</param>
+        /// <param name="redirectUrl">The redirect URL of the client application</param>
+        /// <returns>The TwitchConnection object</returns>
+        public static async Task<TwitchConnection> ConnectViaAuthorizationCodeAsync(string clientID, string clientSecret, string authorizationCode, string redirectUrl = null)
 		{
 			Validator.ValidateString(clientID, "clientID");
 			Validator.ValidateString(authorizationCode, "authorizationCode");
 
-			OAuthService oauthService = new OAuthService();
-			OAuthTokenModel token = await oauthService.GetOAuthTokenModel(clientID, clientSecret, authorizationCode, redirectUrl);
-			if (token == null)
-			{
-				throw new InvalidOperationException("OAuth token was not acquired");
-			}
-			return new TwitchConnection(token);
-		}
+			OAuthService oauthService = new();
+			OAuthTokenModel token = await oauthService.GetOAuthTokenModelAsync(clientID, clientSecret, authorizationCode, redirectUrl);
+            return token == null ? throw new InvalidOperationException("OAuth token was not acquired") : new TwitchConnection(token);
+        }
 
-		/// <summary>
-		/// Creates a TwitchConnection object from an app access token.
-		/// </summary>
-		/// <param name="clientID">The ID of the client application</param>
-		/// <param name="clientSecret">The secret of the client application</param>
-		/// <returns>The TwitchConnection object</returns>
-		public static async Task<TwitchConnection> ConnectViaAppAccess(string clientID, string clientSecret)
+        /// <summary>
+        /// Creates a TwitchConnection object from an app access token.
+        /// </summary>
+        /// <param name="clientID">The ID of the client application</param>
+        /// <param name="clientSecret">The secret of the client application</param>
+        /// <returns>The TwitchConnection object</returns>
+        public static async Task<TwitchConnection> ConnectViaAppAccessAsync(string clientID, string clientSecret)
 		{
 			Validator.ValidateString(clientID, "clientID");
 			Validator.ValidateString(clientSecret, "clientSecret");
 
 			OAuthTokenModel token = null;
-			using (AdvancedHttpClient client = new AdvancedHttpClient())
+			using (AdvancedHttpClient client = new())
 			{
-				token = await client.PostAsync<OAuthTokenModel>(await TwitchConnection.GetTokenURLForAppAccess(clientID, clientSecret));
+				token = await client.PostAsync<OAuthTokenModel>(await GetTokenURLForAppAccessAsync(clientID, clientSecret));
 			}
 
 			if (token == null)
@@ -488,14 +482,14 @@ namespace Twitch.Base
 		/// <param name="token">The OAuth token to use</param>
 		/// <param name="refreshToken">Whether to refresh the token</param>
 		/// <returns>The TwitchConnection object</returns>
-		public static async Task<TwitchConnection> ConnectViaOAuthToken(OAuthTokenModel token, bool refreshToken = true)
+		public static async Task<TwitchConnection> ConnectViaOAuthTokenAsync(OAuthTokenModel token, bool refreshToken = true)
 		{
 			Validator.ValidateVariable(token, "token");
 
-			TwitchConnection connection = new TwitchConnection(token);
+			TwitchConnection connection = new(token);
 			if (refreshToken)
 			{
-				await connection.RefreshOAuthToken();
+				await connection.RefreshOAuthTokenAsync();
 			}
 
 			return connection;
@@ -512,7 +506,7 @@ namespace Twitch.Base
 
 			if (result.Length > 0)
 			{
-				result = result.Substring(0, result.Length - 1);
+				result = result[..^1];
 			}
 
 			return result;
@@ -524,29 +518,29 @@ namespace Twitch.Base
 
 			this.token = token;
 
-			this.OAuth = new OAuthService(this);
-			this.NewAPI = new NewTwitchAPIServices(this);
+			OAuth = new OAuthService(this);
+			NewAPI = new NewTwitchAPIServices(this);
 		}
 
-		/// <summary>
-		/// Refreshs the current OAuth token.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task RefreshOAuthToken() { this.token = await this.OAuth.RefreshToken(this.token); }
+        /// <summary>
+        /// Refreshs the current OAuth token.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task RefreshOAuthTokenAsync() => token = await OAuth.RefreshTokenAsync(token);
 
-		/// <summary>
-		/// Gets a copy of the current OAuth token.
-		/// </summary>
-		/// <returns>The OAuth token copy</returns>
-		public OAuthTokenModel GetOAuthTokenCopy() { return JSONSerializerHelper.Clone<OAuthTokenModel>(this.token); }
+        /// <summary>
+        /// Gets a copy of the current OAuth token.
+        /// </summary>
+        /// <returns>The OAuth token copy</returns>
+        public OAuthTokenModel GetOAuthTokenCopy() => JSONSerializerHelper.Clone<OAuthTokenModel>(token);
 
-		internal async Task<OAuthTokenModel> GetOAuthToken(bool autoRefreshToken = true)
+        internal async Task<OAuthTokenModel> GetOAuthTokenAsync(bool autoRefreshToken = true)
 		{
-			if (autoRefreshToken && this.token.ExpirationDateTime < DateTimeOffset.Now)
+			if (autoRefreshToken && token.ExpirationDateTime < DateTimeOffset.Now)
 			{
-				await this.RefreshOAuthToken();
+				await RefreshOAuthTokenAsync();
 			}
-			return this.token;
+			return token;
 		}
 	}
 }

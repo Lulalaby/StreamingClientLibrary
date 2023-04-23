@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,10 +29,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="user">The user to get channel information for</param>
 		/// <returns>The channel information</returns>
-		public async Task<ChannelInformationModel> GetChannelInformation(UserModel user)
+		public async Task<ChannelInformationModel> GetChannelInformationAsync(UserModel user)
 		{
 			Validator.ValidateVariable(user, "user");
-			IEnumerable<ChannelInformationModel> results = await this.GetDataResultAsync<ChannelInformationModel>("channels?broadcaster_id=" + user.id);
+			IEnumerable<ChannelInformationModel> results = await GetDataResultAsync<ChannelInformationModel>("channels?broadcaster_id=" + user.id);
 			return results.FirstOrDefault();
 		}
 
@@ -44,10 +44,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="gameID">The optional game ID to update to</param>
 		/// <param name="broadcasterLanguage">The optional broadcast language to update to</param>
 		/// <returns>Whether the update was successful or not</returns>
-		public async Task<bool> UpdateChannelInformation(ChannelInformationModel channelInformation, string title = null, string gameID = null, string broadcasterLanguage = null)
+		public async Task<bool> UpdateChannelInformationAsync(ChannelInformationModel channelInformation, string title = null, string gameID = null, string broadcasterLanguage = null)
 		{
 			Validator.ValidateVariable(channelInformation, "channelInformation");
-			return await this.UpdateChannelInformation(channelInformation.broadcaster_id, title, gameID, broadcasterLanguage);
+			return await UpdateChannelInformationAsync(channelInformation.broadcaster_id, title, gameID, broadcasterLanguage);
 		}
 
 		/// <summary>
@@ -58,22 +58,22 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="gameID">The optional game ID to update to</param>
 		/// <param name="broadcasterLanguage">The optional broadcast language to update to</param>
 		/// <returns>Whether the update was successful or not</returns>
-		public async Task<bool> UpdateChannelInformation(UserModel channel, string title = null, string gameID = null, string broadcasterLanguage = null)
+		public async Task<bool> UpdateChannelInformationAsync(UserModel channel, string title = null, string gameID = null, string broadcasterLanguage = null)
 		{
 			Validator.ValidateVariable(channel, "channel");
-			return await this.UpdateChannelInformation(channel.id, title, gameID, broadcasterLanguage);
+			return await UpdateChannelInformationAsync(channel.id, title, gameID, broadcasterLanguage);
 		}
 
-		private async Task<bool> UpdateChannelInformation(string broadcasterID, string title = null, string gameID = null, string broadcasterLanguage = null)
+		private async Task<bool> UpdateChannelInformationAsync(string broadcasterID, string title = null, string gameID = null, string broadcasterLanguage = null)
 		{
-			JObject jobj = new JObject();
+			JObject jobj = new();
 			if (!string.IsNullOrEmpty(title))
 			{ jobj["title"] = title; }
 			if (!string.IsNullOrEmpty(gameID))
 			{ jobj["game_id"] = gameID; }
 			if (!string.IsNullOrEmpty(broadcasterLanguage))
 			{ jobj["broadcaster_language"] = broadcasterLanguage; }
-			HttpResponseMessage response = await this.PatchAsync("channels?broadcaster_id=" + broadcasterID, AdvancedHttpClient.CreateContentFromObject(jobj));
+			HttpResponseMessage response = await PatchAsync("channels?broadcaster_id=" + broadcasterID, AdvancedHttpClient.CreateContentFromObject(jobj));
 			return response.IsSuccessStatusCode;
 		}
 
@@ -83,10 +83,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="channel">The channel to get banned events for</param>
 		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
 		/// <returns>The set of banned events</returns>
-		public async Task<IEnumerable<ChannelBannedEventModel>> GetChannelBannedEvents(UserModel channel, int maxResults = 1)
+		public async Task<IEnumerable<ChannelBannedEventModel>> GetChannelBannedEventsAsync(UserModel channel, int maxResults = 1)
 		{
 			Validator.ValidateVariable(channel, "channel");
-			return await this.GetPagedDataResultAsync<ChannelBannedEventModel>("moderation/banned/events?broadcaster_id=" + channel.id, maxResults);
+			return await GetPagedDataResultAsync<ChannelBannedEventModel>("moderation/banned/events?broadcaster_id=" + channel.id, maxResults);
 		}
 
 		/// <summary>
@@ -96,10 +96,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="userIDs">If specified, filters banned and timed-out users to those userIDs specified.</param>
 		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
 		/// <returns>The set of banned or timed-out users</returns>
-		public async Task<IEnumerable<ChannelBannedUserModel>> GetChannelBannedUsers(UserModel channel, IEnumerable<string> userIDs = null, int maxResults = 1)
+		public async Task<IEnumerable<ChannelBannedUserModel>> GetChannelBannedUsersAsync(UserModel channel, IEnumerable<string> userIDs = null, int maxResults = 1)
 		{
 			Validator.ValidateVariable(channel, "channel");
-			List<string> parameters = new List<string>();
+			List<string> parameters = new();
 			if (userIDs != null)
 			{
 				foreach (string userID in userIDs)
@@ -108,7 +108,7 @@ namespace Twitch.Base.Services.NewAPI
 				}
 			}
 			parameters.Add("broadcaster_id=" + channel.id);
-			return await this.GetPagedDataResultAsync<ChannelBannedUserModel>("moderation/banned?" + string.Join("&", parameters), maxResults);
+			return await GetPagedDataResultAsync<ChannelBannedUserModel>("moderation/banned?" + string.Join("&", parameters), maxResults);
 		}
 
 		/// <summary>
@@ -117,10 +117,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="channel">The channel to get moderator events for</param>
 		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
 		/// <returns>The set of moderator events</returns>
-		public async Task<IEnumerable<ChannelModeratorEventModel>> GetChannelModeratorEvents(UserModel channel, int maxResults = 1)
+		public async Task<IEnumerable<ChannelModeratorEventModel>> GetChannelModeratorEventsAsync(UserModel channel, int maxResults = 1)
 		{
 			Validator.ValidateVariable(channel, "channel");
-			return await this.GetPagedDataResultAsync<ChannelModeratorEventModel>("moderation/moderators/events?broadcaster_id=" + channel.id, maxResults);
+			return await GetPagedDataResultAsync<ChannelModeratorEventModel>("moderation/moderators/events?broadcaster_id=" + channel.id, maxResults);
 		}
 
 		/// <summary>
@@ -130,10 +130,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="userIDs">If specified, filters moderator users to those userIDs specified.</param>
 		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
 		/// <returns>The set of moderator users</returns>
-		public async Task<IEnumerable<ChannelModeratorUserModel>> GetChannelModeratorUsers(UserModel channel, IEnumerable<string> userIDs = null, int maxResults = 1)
+		public async Task<IEnumerable<ChannelModeratorUserModel>> GetChannelModeratorUsersAsync(UserModel channel, IEnumerable<string> userIDs = null, int maxResults = 1)
 		{
 			Validator.ValidateVariable(channel, "channel");
-			List<string> parameters = new List<string>();
+			List<string> parameters = new();
 			if (userIDs != null)
 			{
 				foreach (string userID in userIDs)
@@ -142,7 +142,7 @@ namespace Twitch.Base.Services.NewAPI
 				}
 			}
 			parameters.Add("broadcaster_id=" + channel.id);
-			return await this.GetPagedDataResultAsync<ChannelModeratorUserModel>("moderation/moderators?" + string.Join("&", parameters), maxResults);
+			return await GetPagedDataResultAsync<ChannelModeratorUserModel>("moderation/moderators?" + string.Join("&", parameters), maxResults);
 		}
 
 		/// <summary>
@@ -150,10 +150,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="channel">The channel to get channel editors for</param>
 		/// <returns>The list of channel editors</returns>
-		public async Task<IEnumerable<ChannelEditorUserModel>> GetChannelEditorUsers(UserModel channel)
+		public async Task<IEnumerable<ChannelEditorUserModel>> GetChannelEditorUsersAsync(UserModel channel)
 		{
 			Validator.ValidateVariable(channel, "channel");
-			return await this.GetDataResultAsync<ChannelEditorUserModel>("channels/editors?broadcaster_id=" + channel.id);
+			return await GetDataResultAsync<ChannelEditorUserModel>("channels/editors?broadcaster_id=" + channel.id);
 		}
 
 		/// <summary>
@@ -162,10 +162,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="channel">The channel to get Hype Train data for</param>
 		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
 		/// <returns>The most recent Hype Train</returns>
-		public async Task<IEnumerable<ChannelHypeTrainModel>> GetHypeTrainEvents(UserModel channel, int maxResults = 1)
+		public async Task<IEnumerable<ChannelHypeTrainModel>> GetHypeTrainEventsAsync(UserModel channel, int maxResults = 1)
 		{
 			Validator.ValidateVariable(channel, "channel");
-			return await this.GetPagedDataResultAsync<ChannelHypeTrainModel>($"hypetrain/events?broadcaster_id={channel.id}", maxResults);
+			return await GetPagedDataResultAsync<ChannelHypeTrainModel>($"hypetrain/events?broadcaster_id={channel.id}", maxResults);
 		}
 	}
 }

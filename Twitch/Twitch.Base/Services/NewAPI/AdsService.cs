@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,18 +29,18 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="channel">The channel to run the add on</param>
 		/// <param name="length">Desired length of the commercial in seconds. Valid options are 30, 60, 90, 120, 150, 180.</param>
 		/// <returns></returns>
-		public async Task<AdResponseModel> RunAd(UserModel channel, int length)
+		public async Task<AdResponseModel> RunAdAsync(UserModel channel, int length)
 		{
 			Validator.ValidateVariable(channel, "channel");
 			Validator.Validate(length > 0, "length");
 
-			JObject body = new JObject
-			{
+			JObject body = new()
+            {
 				["broadcaster_id"] = channel.id,
 				["length"] = length
 			};
 
-			JObject result = await this.PostAsync<JObject>("channels/commercial", AdvancedHttpClient.CreateContentFromObject(body));
+			JObject result = await PostAsync<JObject>("channels/commercial", AdvancedHttpClient.CreateContentFromObject(body));
 			if (result != null && result.ContainsKey("data"))
 			{
 				JArray array = (JArray)result["data"];

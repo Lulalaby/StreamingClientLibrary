@@ -22,33 +22,24 @@ namespace Twitch.Base.Models.Clients.PubSub
 		/// </summary>
 		public string nonce { get; set; }
 
-		/// <summary>
-		/// Creates a new instance of the PubSubPacketModel class.
-		/// </summary>
-		public PubSubPacketModel()
-		{
-			this.nonce = Guid.NewGuid().ToString().Replace("-", "");
-		}
+        /// <summary>
+        /// Creates a new instance of the PubSubPacketModel class.
+        /// </summary>
+        public PubSubPacketModel() => nonce = Guid.NewGuid().ToString().Replace("-", "");
 
-		/// <summary>
-		/// Creates a new instance of the PubSubPacketModel class.
-		/// </summary>
-		/// <param name="type">The type of packet</param>
-		public PubSubPacketModel(string type)
-			: this()
-		{
-			this.type = type;
-		}
+        /// <summary>
+        /// Creates a new instance of the PubSubPacketModel class.
+        /// </summary>
+        /// <param name="type">The type of packet</param>
+        public PubSubPacketModel(string type)
+            : this() => this.type = type;
 
-		/// <summary>
-		/// Creates a new instance of the PubSubPacketModel class.
-		/// </summary>
-		/// <param name="type">The type of packet</param>
-		/// <param name="data">The data of the packet</param>
-		public PubSubPacketModel(string type, object data)
-			: this(type)
-		{
-			this.data = JObject.FromObject(data);
-		}
-	}
+        /// <summary>
+        /// Creates a new instance of the PubSubPacketModel class.
+        /// </summary>
+        /// <param name="type">The type of packet</param>
+        /// <param name="data">The data of the packet</param>
+        public PubSubPacketModel(string type, object data)
+            : this(type) => this.data = JObject.FromObject(data);
+    }
 }

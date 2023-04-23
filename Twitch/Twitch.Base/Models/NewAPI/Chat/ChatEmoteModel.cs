@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using Newtonsoft.Json.Linq;
 
@@ -9,9 +9,9 @@ namespace Twitch.Base.Models.NewAPI.Chat
 	/// </summary>
 	public class ChatEmoteModel
 	{
-		private const string imageUrlSize1 = "url_1x";
-		private const string imageUrlSize2 = "url_2x";
-		private const string imageUrlSize4 = "url_4x";
+		private const string ImageUrlSize1 = "url_1x";
+		private const string ImageUrlSize2 = "url_2x";
+		private const string ImageUrlSize4 = "url_4x";
 
 		/// <summary>
 		/// The format name for a static image.
@@ -102,38 +102,35 @@ namespace Twitch.Base.Models.NewAPI.Chat
 		/// </summary>
 		public string owner_id { get; set; }
 
-		/// <summary>
-		/// The size 1 image url of the emote.
-		/// </summary>
-		public string Size1URL { get { return this.images.ContainsKey(imageUrlSize1) ? this.images[imageUrlSize1].ToString() : null; } }
-		/// <summary>
-		/// The size 2 image url of the emote.
-		/// </summary>
-		public string Size2URL { get { return this.images.ContainsKey(imageUrlSize2) ? this.images[imageUrlSize2].ToString() : null; } }
-		/// <summary>
-		/// The size 4 image url of the emote.
-		/// </summary>
-		public string Size4URL { get { return this.images.ContainsKey(imageUrlSize4) ? this.images[imageUrlSize4].ToString() : null; } }
+        /// <summary>
+        /// The size 1 image url of the emote.
+        /// </summary>
+        public string Size1URL => images.ContainsKey(ImageUrlSize1) ? images[ImageUrlSize1].ToString() : null;
+        /// <summary>
+        /// The size 2 image url of the emote.
+        /// </summary>
+        public string Size2URL => images.ContainsKey(ImageUrlSize2) ? images[ImageUrlSize2].ToString() : null;
+        /// <summary>
+        /// The size 4 image url of the emote.
+        /// </summary>
+        public string Size4URL => images.ContainsKey(ImageUrlSize4) ? images[ImageUrlSize4].ToString() : null;
 
-		/// <summary>
-		/// Whether the emote has a static format image.
-		/// </summary>
-		public bool HasStatic { get { return this.format.Contains(StaticFormatName); } }
-		/// <summary>
-		/// Whether the emote has an animated format image.
-		/// </summary>
-		public bool HasAnimated { get { return this.format.Contains(AnimatedFormatName); } }
+        /// <summary>
+        /// Whether the emote has a static format image.
+        /// </summary>
+        public bool HasStatic => format.Contains(StaticFormatName);
+        /// <summary>
+        /// Whether the emote has an animated format image.
+        /// </summary>
+        public bool HasAnimated => format.Contains(AnimatedFormatName);
 
-		/// <summary>
-		/// Builds a URL to the image with the following parameters.
-		/// </summary>
-		/// <param name="format">The format type of the image</param>
-		/// <param name="theme">The theme type of the image</param>
-		/// <param name="scale">The scale type of the image</param>
-		/// <returns>The URL of the image</returns>
-		public string BuildImageURL(string format, string theme, string scale)
-		{
-			return $"https://static-cdn.jtvnw.net/emoticons/v2/{this.id}/{format}/{theme}/{scale}";
-		}
-	}
+        /// <summary>
+        /// Builds a URL to the image with the following parameters.
+        /// </summary>
+        /// <param name="format">The format type of the image</param>
+        /// <param name="theme">The theme type of the image</param>
+        /// <param name="scale">The scale type of the image</param>
+        /// <returns>The URL of the image</returns>
+        public string BuildImageURL(string format, string theme, string scale) => $"https://static-cdn.jtvnw.net/emoticons/v2/{id}/{format}/{theme}/{scale}";
+    }
 }

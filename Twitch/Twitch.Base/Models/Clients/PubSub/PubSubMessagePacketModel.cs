@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using StreamingClient.Base.Util;
@@ -10,28 +10,28 @@ namespace Twitch.Base.Models.Clients.PubSub
 	/// </summary>
 	public class PubSubMessagePacketModel : PubSubPacketModel
 	{
-		/// <summary>
-		/// The topic of the message.
-		/// </summary>
-		[JsonIgnore]
-		public string topic { get { return (this.data != null && this.data.ContainsKey("topic")) ? this.data["topic"].ToString() : null; } }
-		/// <summary>
-		/// The topic type of the message.
-		/// </summary>
-		[JsonIgnore]
+        /// <summary>
+        /// The topic of the message.
+        /// </summary>
+        [JsonIgnore]
+        public string topic => (data != null && data.ContainsKey(nameof(topic))) ? data[nameof(topic)].ToString() : null;
+        /// <summary>
+        /// The topic type of the message.
+        /// </summary>
+        [JsonIgnore]
 		public PubSubTopicsEnum topicType
 		{
 			get
 			{
-				if (!string.IsNullOrEmpty(this.topic))
+				if (!string.IsNullOrEmpty(topic))
 				{
-					string[] splits = this.topic.Split(new char[] { '.' });
+					string[] splits = topic.Split(new char[] { '.' });
 					if (splits.Length > 0)
 					{
 						return EnumHelper.GetEnumValueFromString<PubSubTopicsEnum>(splits[0]);
 					}
 				}
-				return default(PubSubTopicsEnum);
+				return default;
 			}
 		}
 		/// <summary>
@@ -41,9 +41,9 @@ namespace Twitch.Base.Models.Clients.PubSub
 		{
 			get
 			{
-				if (!string.IsNullOrEmpty(this.topic))
+				if (!string.IsNullOrEmpty(topic))
 				{
-					string[] splits = this.topic.Split(new char[] { '.' });
+					string[] splits = topic.Split(new char[] { '.' });
 					if (splits.Length > 1)
 					{
 						return splits[1];
@@ -53,17 +53,17 @@ namespace Twitch.Base.Models.Clients.PubSub
 			}
 		}
 
-		/// <summary>
-		/// The message contents as a string.
-		/// </summary>
-		[JsonIgnore]
-		public string message { get { return (this.data != null && this.data.ContainsKey("message")) ? this.data["message"].ToString() : null; } }
-		/// <summary>
-		/// The message contents as a data model.
-		/// </summary>
-		[JsonIgnore]
-		public PubSubMessagePacketDataModel messageData { get { return (!string.IsNullOrEmpty(this.message)) ? JSONSerializerHelper.DeserializeFromString<PubSubMessagePacketDataModel>(this.message) : null; } }
-	}
+        /// <summary>
+        /// The message contents as a string.
+        /// </summary>
+        [JsonIgnore]
+        public string message => (data != null && data.ContainsKey(nameof(message))) ? data[nameof(message)].ToString() : null;
+        /// <summary>
+        /// The message contents as a data model.
+        /// </summary>
+        [JsonIgnore]
+        public PubSubMessagePacketDataModel messageData => (!string.IsNullOrEmpty(message)) ? JSONSerializerHelper.DeserializeFromString<PubSubMessagePacketDataModel>(message) : null;
+    }
 
 	/// <summary>
 	/// The message data for a packet.
@@ -78,10 +78,10 @@ namespace Twitch.Base.Models.Clients.PubSub
 		/// The JToken data of the message.
 		/// </summary>
 		public object data { get; set; }
-		/// <summary>
-		/// The JToken data of the message.
-		/// </summary>
-		[JsonIgnore]
-		public JToken data_object { get { return (this.data is string) ? JToken.Parse((string)this.data) : (JToken)this.data; } }
-	}
+        /// <summary>
+        /// The JToken data of the message.
+        /// </summary>
+        [JsonIgnore]
+        public JToken data_object => (data is string v) ? JToken.Parse(v) : (JToken)data;
+    }
 }

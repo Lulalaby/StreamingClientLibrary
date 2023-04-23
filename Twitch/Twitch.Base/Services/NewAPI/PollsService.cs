@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
@@ -27,10 +27,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="poll">The poll to create</param>
 		/// <returns>The created poll</returns>
-		public async Task<PollModel> CreatePoll(CreatePollModel poll)
+		public async Task<PollModel> CreatePollAsync(CreatePollModel poll)
 		{
 			Validator.ValidateVariable(poll, "poll");
-			return (await this.PostDataResultAsync<PollModel>("polls", AdvancedHttpClient.CreateContentFromObject(poll)))?.FirstOrDefault();
+			return (await PostDataResultAsync<PollModel>("polls", AdvancedHttpClient.CreateContentFromObject(poll)))?.FirstOrDefault();
 		}
 
 		/// <summary>
@@ -39,11 +39,11 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="broadcaster">The broadcaster to get the poll for</param>
 		/// <param name="id">The ID of the poll to get</param>
 		/// <returns>The poll</returns>
-		public async Task<PollModel> GetPoll(UserModel broadcaster, string id)
+		public async Task<PollModel> GetPollAsync(UserModel broadcaster, string id)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateString(id, "id");
-			return (await this.GetDataResultAsync<PollModel>("polls?broadcaster_id=" + broadcaster.id + "&id=" + id))?.FirstOrDefault();
+			return (await GetDataResultAsync<PollModel>("polls?broadcaster_id=" + broadcaster.id + "&id=" + id))?.FirstOrDefault();
 		}
 
 		/// <summary>
@@ -52,19 +52,19 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="broadcaster">The broadcaster to get the poll for</param>
 		/// <param name="id">The ID of the poll to get</param>
 		/// <returns>The poll</returns>
-		public async Task<PollModel> EndPoll(UserModel broadcaster, string id)
+		public async Task<PollModel> EndPollAsync(UserModel broadcaster, string id)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateString(id, "id");
 
-			JObject jobj = new JObject
-			{
+			JObject jobj = new()
+            {
 				["broadcaster_id"] = broadcaster.id,
 				["id"] = id,
 				["status"] = "TERMINATED"
 			};
 
-			return (await this.PostDataResultAsync<PollModel>("polls", AdvancedHttpClient.CreateContentFromObject(jobj)))?.FirstOrDefault();
+			return (await PostDataResultAsync<PollModel>("polls", AdvancedHttpClient.CreateContentFromObject(jobj)))?.FirstOrDefault();
 		}
 	}
 }

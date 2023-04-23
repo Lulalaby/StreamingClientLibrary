@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -24,32 +24,29 @@ namespace Twitch.Base.Services
 
 		internal OAuthService() : base(OAuthBaseAddress) { }
 
-		/// <summary>
-		/// Creates an OAuth token for authenticating with the Twitch services.
-		/// </summary>
-		/// <param name="clientID">The id of the client application</param>
-		/// <param name="authorizationCode">The authorization code</param>
-		/// <param name="redirectUrl">The URL to redirect to after authorization is complete</param>
-		/// <returns>The OAuth token</returns>
-		public async Task<OAuthTokenModel> GetOAuthTokenModel(string clientID, string authorizationCode, string redirectUrl = null)
-		{
-			return await this.GetOAuthTokenModel(clientID, null, authorizationCode, redirectUrl);
-		}
+        /// <summary>
+        /// Creates an OAuth token for authenticating with the Twitch services.
+        /// </summary>
+        /// <param name="clientID">The id of the client application</param>
+        /// <param name="authorizationCode">The authorization code</param>
+        /// <param name="redirectUrl">The URL to redirect to after authorization is complete</param>
+        /// <returns>The OAuth token</returns>
+        public async Task<OAuthTokenModel> GetOAuthTokenModelAsync(string clientID, string authorizationCode, string redirectUrl = null) => await GetOAuthTokenModelAsync(clientID, null, authorizationCode, redirectUrl);
 
-		/// <summary>
-		/// Creates an OAuth token for authenticating with the Twitch services.
-		/// </summary>
-		/// <param name="clientID">The id of the client application</param>
-		/// <param name="clientSecret">The secret key of the client application</param>
-		/// <param name="authorizationCode">The authorization code</param>
-		/// <param name="redirectUrl">The URL to redirect to after authorization is complete</param>
-		/// <returns>The OAuth token</returns>
-		public async Task<OAuthTokenModel> GetOAuthTokenModel(string clientID, string clientSecret, string authorizationCode, string redirectUrl = null)
+        /// <summary>
+        /// Creates an OAuth token for authenticating with the Twitch services.
+        /// </summary>
+        /// <param name="clientID">The id of the client application</param>
+        /// <param name="clientSecret">The secret key of the client application</param>
+        /// <param name="authorizationCode">The authorization code</param>
+        /// <param name="redirectUrl">The URL to redirect to after authorization is complete</param>
+        /// <returns>The OAuth token</returns>
+        public async Task<OAuthTokenModel> GetOAuthTokenModelAsync(string clientID, string clientSecret, string authorizationCode, string redirectUrl = null)
 		{
 			Validator.ValidateString(clientID, "clientID");
 			Validator.ValidateString(authorizationCode, "authorizationCode");
 
-			Dictionary<string, string> parameters = new Dictionary<string, string>()
+			Dictionary<string, string> parameters = new()
 			{
 				{ "client_id", clientID },
 				{ "client_secret", clientSecret },
@@ -57,9 +54,9 @@ namespace Twitch.Base.Services
 				{ "grant_type", "authorization_code" },
 				{ "redirect_uri", redirectUrl },
 			};
-			FormUrlEncodedContent content = new FormUrlEncodedContent(parameters.AsEnumerable());
+			FormUrlEncodedContent content = new(parameters.AsEnumerable());
 
-			OAuthTokenModel token = await this.PostAsync<OAuthTokenModel>("oauth2/token?" + await content.ReadAsStringAsync(), AdvancedHttpClient.CreateContentFromObject(string.Empty), autoRefreshToken: false);
+			OAuthTokenModel token = await PostAsync<OAuthTokenModel>("oauth2/token?" + await content.ReadAsStringAsync(), AdvancedHttpClient.CreateContentFromObject(string.Empty), autoRefreshToken: false);
 			token.clientID = clientID;
 			token.clientSecret = clientSecret;
 			token.authorizationCode = authorizationCode;
@@ -71,20 +68,20 @@ namespace Twitch.Base.Services
 		/// </summary>
 		/// <param name="token">The token to refresh</param>
 		/// <returns>The refreshed token</returns>
-		public async Task<OAuthTokenModel> RefreshToken(OAuthTokenModel token)
+		public async Task<OAuthTokenModel> RefreshTokenAsync(OAuthTokenModel token)
 		{
 			Validator.ValidateVariable(token, "token");
 
-			Dictionary<string, string> parameters = new Dictionary<string, string>()
+			Dictionary<string, string> parameters = new()
 			{
 				{ "client_id", token.clientID },
 				{ "client_secret", token.clientSecret },
 				{ "refresh_token", token.refreshToken },
 				{ "grant_type", "refresh_token" },
 			};
-			FormUrlEncodedContent content = new FormUrlEncodedContent(parameters.AsEnumerable());
+			FormUrlEncodedContent content = new(parameters.AsEnumerable());
 
-			OAuthTokenModel newToken = await this.PostAsync<OAuthTokenModel>("oauth2/token?" + await content.ReadAsStringAsync(), AdvancedHttpClient.CreateContentFromObject(string.Empty), autoRefreshToken: false);
+			OAuthTokenModel newToken = await PostAsync<OAuthTokenModel>("oauth2/token?" + await content.ReadAsStringAsync(), AdvancedHttpClient.CreateContentFromObject(string.Empty), autoRefreshToken: false);
 			newToken.clientID = token.clientID;
 			newToken.clientSecret = token.clientSecret;
 			newToken.authorizationCode = token.authorizationCode;

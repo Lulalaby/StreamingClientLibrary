@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -122,41 +122,35 @@ namespace Twitch.Base.Clients
 		/// </summary>
 		public event EventHandler<ChatGlobalUserStatePacketModel> OnGlobalUserStateReceived;
 
-		private TwitchConnection connection;
+		private readonly TwitchConnection connection;
 
-		/// <summary>
-		/// Creates a new instance of the ChatClient class.
-		/// </summary>
-		/// <param name="connection">The current connection</param>
-		public ChatClient(TwitchConnection connection)
-		{
-			this.connection = connection;
-		}
+        /// <summary>
+        /// Creates a new instance of the ChatClient class.
+        /// </summary>
+        /// <param name="connection">The current connection</param>
+        public ChatClient(TwitchConnection connection) => this.connection = connection;
 
-		/// <summary>
-		/// Connects to the default ChatClient connection.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public virtual async Task Connect() { await this.Connect(ChatClient.CHAT_CONNECTION_URL); }
+        /// <summary>
+        /// Connects to the default ChatClient connection.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public virtual async Task ConnectAsync() => await ConnectAsync(CHAT_CONNECTION_URL);
 
-		/// <summary>
-		/// Sends a pong packet.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task Pong()
-		{
-			await this.Send("PONG :tmi.twitch.tv");
-		}
+        /// <summary>
+        /// Sends a pong packet.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task PongAsync() => await SendAsync("PONG :tmi.twitch.tv");
 
-		/// <summary>
-		/// Joins the specified broadcaster's channel.
-		/// </summary>
-		/// <param name="broadcaster">The broadcaster's channel to join</param>
-		/// <returns>An awaitable Task</returns>
-		public async Task Join(NewAPI.Users.UserModel broadcaster)
+        /// <summary>
+        /// Joins the specified broadcaster's channel.
+        /// </summary>
+        /// <param name="broadcaster">The broadcaster's channel to join</param>
+        /// <returns>An awaitable Task</returns>
+        public async Task JoinAsync(NewAPI.Users.UserModel broadcaster)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
-			await this.Send("JOIN #" + broadcaster.login);
+			await SendAsync("JOIN #" + broadcaster.login);
 		}
 
 		/// <summary>
@@ -164,10 +158,10 @@ namespace Twitch.Base.Clients
 		/// </summary>
 		/// <param name="broadcaster">The broadcaster's channel to leave</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task Leave(NewAPI.Users.UserModel broadcaster)
+		public async Task LeaveAsync(NewAPI.Users.UserModel broadcaster)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
-			await this.Send("PART #" + broadcaster.login);
+			await SendAsync("PART #" + broadcaster.login);
 		}
 
 		/// <summary>
@@ -176,11 +170,11 @@ namespace Twitch.Base.Clients
 		/// <param name="broadcaster">The broadcaster's channel to send the message to</param>
 		/// <param name="message">The message to send</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task SendMessage(NewAPI.Users.UserModel broadcaster, string message)
+		public async Task SendMessageAsync(NewAPI.Users.UserModel broadcaster, string message)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateString(message, "message");
-			await this.Send(string.Format("PRIVMSG #{0} :{1}", broadcaster.login, message));
+			await SendAsync(string.Format("PRIVMSG #{0} :{1}", broadcaster.login, message));
 		}
 
 		/// <summary>
@@ -190,12 +184,12 @@ namespace Twitch.Base.Clients
 		/// <param name="message">The message to send</param>
 		/// <param name="messageID">The message ID to reply to</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task SendReplyMessage(NewAPI.Users.UserModel broadcaster, string message, string messageID)
+		public async Task SendReplyMessageAsync(NewAPI.Users.UserModel broadcaster, string message, string messageID)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateString(message, "message");
 			Validator.ValidateString(messageID, "messageID");
-			await this.Send(string.Format("@reply-parent-msg-id={0} PRIVMSG #{1} :{2}", messageID, broadcaster.login, message));
+			await SendAsync(string.Format("@reply-parent-msg-id={0} PRIVMSG #{1} :{2}", messageID, broadcaster.login, message));
 		}
 
 		/// <summary>
@@ -205,13 +199,13 @@ namespace Twitch.Base.Clients
 		/// <param name="user">The user to whisper</param>
 		/// <param name="message">The message to send</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task SendWhisperMessage(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user, string message)
+		public async Task SendWhisperMessageAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user, string message)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(user, "user");
 			Validator.ValidateString(message, "message");
 
-			await this.connection.NewAPI.Chat.SendWhisper(broadcaster.id, user.id, message);
+			await connection.NewAPI.Chat.SendWhisperAsync(broadcaster.id, user.id, message);
 		}
 
 		/// <summary>
@@ -220,12 +214,12 @@ namespace Twitch.Base.Clients
 		/// <param name="broadcaster">The broadcaster's channel to use</param>
 		/// <param name="messageID">The ID of the message to clear</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task DeleteMessage(NewAPI.Users.UserModel broadcaster, string messageID)
+		public async Task DeleteMessageAsync(NewAPI.Users.UserModel broadcaster, string messageID)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateString(messageID, "messageID");
 
-			await this.connection.NewAPI.Chat.DeleteChatMessage(broadcaster.id, messageID);
+			await connection.NewAPI.Chat.DeleteChatMessageAsync(broadcaster.id, messageID);
 		}
 
 		/// <summary>
@@ -235,13 +229,13 @@ namespace Twitch.Base.Clients
 		/// <param name="moderator">The moderator deleting the message</param>
 		/// <param name="messageID">The ID of the message to clear</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task DeleteMessage(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator, string messageID)
+		public async Task DeleteMessageAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator, string messageID)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(moderator, "moderator");
 			Validator.ValidateString(messageID, "messageID");
 
-			await this.connection.NewAPI.Chat.DeleteChatMessage(broadcaster.id, moderator.id, messageID);
+			await connection.NewAPI.Chat.DeleteChatMessageAsync(broadcaster.id, moderator.id, messageID);
 		}
 
 		/// <summary>
@@ -252,12 +246,12 @@ namespace Twitch.Base.Clients
 		/// <param name="lengthInSeconds">The length in seconds to time out for</param>
 		/// <param name="reason">The reason to timeout the user</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task TimeoutUser(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel targetUser, int lengthInSeconds, string reason = "None")
+		public async Task TimeoutUserAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel targetUser, int lengthInSeconds, string reason = "None")
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(targetUser, "targetUser");
 
-			await this.connection.NewAPI.Chat.TimeoutUser(broadcaster.id, targetUser.id, lengthInSeconds, reason);
+			await connection.NewAPI.Chat.TimeoutUserAsync(broadcaster.id, targetUser.id, lengthInSeconds, reason);
 		}
 
 		/// <summary>
@@ -266,12 +260,12 @@ namespace Twitch.Base.Clients
 		/// <param name="broadcaster">The broadcaster's channel to use</param>
 		/// <param name="moderator">The moderator clearing the chat</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task ClearChat(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator)
+		public async Task ClearChatAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel moderator)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(moderator, "moderator");
 
-			await this.connection.NewAPI.Chat.ClearChat(broadcaster.id, moderator.id);
+			await connection.NewAPI.Chat.ClearChatAsync(broadcaster.id, moderator.id);
 		}
 
 		/// <summary>
@@ -279,11 +273,11 @@ namespace Twitch.Base.Clients
 		/// </summary>
 		/// <param name="broadcaster">The broadcaster's channel to use</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task ClearChat(NewAPI.Users.UserModel broadcaster)
+		public async Task ClearChatAsync(NewAPI.Users.UserModel broadcaster)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 
-			await this.connection.NewAPI.Chat.ClearChat(broadcaster.id);
+			await connection.NewAPI.Chat.ClearChatAsync(broadcaster.id);
 		}
 
 		/// <summary>
@@ -292,12 +286,12 @@ namespace Twitch.Base.Clients
 		/// <param name="broadcaster">The broadcaster's channel</param>
 		/// <param name="user">The user to mod</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task ModUser(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user)
+		public async Task ModUserAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(user, "user");
 
-			await this.connection.NewAPI.Chat.ModUser(broadcaster.id, user.id);
+			await connection.NewAPI.Chat.ModUserAsync(broadcaster.id, user.id);
 		}
 
 		/// <summary>
@@ -306,12 +300,12 @@ namespace Twitch.Base.Clients
 		/// <param name="broadcaster">The broadcaster's channel</param>
 		/// <param name="user">The user to unmod</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task UnmodUser(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user)
+		public async Task UnmodUserAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(user, "user");
 
-			await this.connection.NewAPI.Chat.UnmodUser(broadcaster.id, user.id);
+			await connection.NewAPI.Chat.UnmodUserAsync(broadcaster.id, user.id);
 		}
 
 		/// <summary>
@@ -321,12 +315,12 @@ namespace Twitch.Base.Clients
 		/// <param name="user">The user to ban</param>
 		/// <param name="reason">The reason to ban the user</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task BanUser(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user, string reason = "None")
+		public async Task BanUserAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user, string reason = "None")
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(user, "user");
 
-			await this.connection.NewAPI.Chat.BanUser(broadcaster.id, user.id, reason);
+			await connection.NewAPI.Chat.BanUserAsync(broadcaster.id, user.id, reason);
 		}
 
 		/// <summary>
@@ -335,12 +329,12 @@ namespace Twitch.Base.Clients
 		/// <param name="broadcaster">The broadcaster's channel</param>
 		/// <param name="user">The user to ban</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task UnbanUser(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user)
+		public async Task UnbanUserAsync(NewAPI.Users.UserModel broadcaster, NewAPI.Users.UserModel user)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateVariable(user, "user");
 
-			await this.connection.NewAPI.Chat.UnbanUser(broadcaster.id, user.id);
+			await connection.NewAPI.Chat.UnbanUserAsync(broadcaster.id, user.id);
 		}
 
 		/// <summary>
@@ -349,58 +343,49 @@ namespace Twitch.Base.Clients
 		/// <param name="broadcaster">The broadcaster's channel</param>
 		/// <param name="lengthInSeconds">The length of the commercial</param>
 		/// <returns>An awaitable Task</returns>
-		public async Task RunCommercial(NewAPI.Users.UserModel broadcaster, int lengthInSeconds)
+		public async Task RunCommercialAsync(NewAPI.Users.UserModel broadcaster, int lengthInSeconds)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 
-			await this.connection.NewAPI.Ads.RunAd(broadcaster, lengthInSeconds);
+			await connection.NewAPI.Ads.RunAdAsync(broadcaster, lengthInSeconds);
 		}
 
-		/// <summary>
-		/// Adds membership state event data. By default, we do not send this data to clients without this capability.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task AddMembershipCapability()
+        /// <summary>
+        /// Adds membership state event data. By default, we do not send this data to clients without this capability.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task AddMembershipCapabilityAsync() => await SendAsync("CAP REQ :twitch.tv/membership");
+
+        /// <summary>
+        /// Adds IRC V3 message tags to several commands, if enabled with the commands capability.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task AddTagsCapabilityAsync() => await SendAsync("CAP REQ :twitch.tv/tags");
+
+        /// <summary>
+        /// Enables several Twitch-specific commands.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task AddCommandsCapabilityAsync() => await SendAsync("CAP REQ :twitch.tv/commands");
+
+        /// <summary>
+        /// Connects to the default ChatClient connection.
+        /// </summary>
+        /// <param name="connectionURL">The URL to connect to</param>
+        /// <returns>An awaitable Task</returns>
+        protected new async Task ConnectAsync(string connectionURL)
 		{
-			await this.Send("CAP REQ :twitch.tv/membership");
-		}
+			await base.ConnectAsync(connectionURL);
 
-		/// <summary>
-		/// Adds IRC V3 message tags to several commands, if enabled with the commands capability.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task AddTagsCapability()
-		{
-			await this.Send("CAP REQ :twitch.tv/tags");
-		}
+			await AddCommandsCapabilityAsync();
+			await AddTagsCapabilityAsync();
+			await AddMembershipCapabilityAsync();
 
-		/// <summary>
-		/// Enables several Twitch-specific commands.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task AddCommandsCapability()
-		{
-			await this.Send("CAP REQ :twitch.tv/commands");
-		}
+			OAuthTokenModel oauthToken = await connection.GetOAuthTokenAsync();
+			await SendAsync("PASS oauth:" + oauthToken.accessToken);
 
-		/// <summary>
-		/// Connects to the default ChatClient connection.
-		/// </summary>
-		/// <param name="connectionURL">The URL to connect to</param>
-		/// <returns>An awaitable Task</returns>
-		protected new async Task Connect(string connectionURL)
-		{
-			await base.Connect(connectionURL);
-
-			await this.AddCommandsCapability();
-			await this.AddTagsCapability();
-			await this.AddMembershipCapability();
-
-			OAuthTokenModel oauthToken = await this.connection.GetOAuthToken();
-			await this.Send("PASS oauth:" + oauthToken.accessToken);
-
-			NewAPI.Users.UserModel user = await this.connection.NewAPI.Users.GetCurrentUser();
-			await this.Send("NICK " + user.login.ToLower());
+			NewAPI.Users.UserModel user = await connection.NewAPI.Users.GetCurrentUserAsync();
+			await SendAsync("NICK " + user.login.ToLower());
 		}
 
 		/// <summary>
@@ -412,87 +397,87 @@ namespace Twitch.Base.Clients
 		{
 			foreach (string packetChunk in packetMessage.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
 			{
-				ChatRawPacketModel packet = this.ProcessPacketChunk(packetChunk);
+				ChatRawPacketModel packet = ProcessPacketChunk(packetChunk);
 
-				this.OnPacketReceived?.Invoke(this, packet);
+				OnPacketReceived?.Invoke(this, packet);
 
 				switch (packet.Command)
 				{
 					case PING_COMMAND_ID:
-						this.OnPingReceived?.Invoke(this, new EventArgs());
+						OnPingReceived?.Invoke(this, new EventArgs());
 						break;
 					case RECONNECT_COMMAND_ID:
-						this.OnReconnectRequestedReceived?.Invoke(this, new EventArgs());
+						OnReconnectRequestedReceived?.Invoke(this, new EventArgs());
 						break;
 					case ChatRoomStatePacketModel.CommandID:
-						this.OnRoomStateReceived?.Invoke(this, new ChatRoomStatePacketModel(packet));
+						OnRoomStateReceived?.Invoke(this, new ChatRoomStatePacketModel(packet));
 						break;
 					case ChatUsersListPacketModel.CommandID:
-						this.OnUserListReceived?.Invoke(this, new ChatUsersListPacketModel(packet));
+						OnUserListReceived?.Invoke(this, new ChatUsersListPacketModel(packet));
 						break;
 					case ChatUserJoinPacketModel.CommandID:
-						this.OnUserJoinReceived?.Invoke(this, new ChatUserJoinPacketModel(packet));
+						OnUserJoinReceived?.Invoke(this, new ChatUserJoinPacketModel(packet));
 						break;
 					case ChatUserLeavePacketModel.CommandID:
-						this.OnUserLeaveReceived?.Invoke(this, new ChatUserLeavePacketModel(packet));
+						OnUserLeaveReceived?.Invoke(this, new ChatUserLeavePacketModel(packet));
 						break;
 					case ChatUserStatePacketModel.CommandID:
-						this.OnUserStateReceived?.Invoke(this, new ChatUserStatePacketModel(packet));
+						OnUserStateReceived?.Invoke(this, new ChatUserStatePacketModel(packet));
 						break;
 					case ChatMessagePacketModel.CommandID:
-						this.OnMessageReceived?.Invoke(this, new ChatMessagePacketModel(packet));
+						OnMessageReceived?.Invoke(this, new ChatMessagePacketModel(packet));
 						break;
 					case ChatWhisperMessagePacketModel.CommandID:
-						this.OnWhisperMessageReceived?.Invoke(this, new ChatWhisperMessagePacketModel(packet));
+						OnWhisperMessageReceived?.Invoke(this, new ChatWhisperMessagePacketModel(packet));
 						break;
 					case ChatClearChatPacketModel.CommandID:
-						this.OnChatClearReceived?.Invoke(this, new ChatClearChatPacketModel(packet));
+						OnChatClearReceived?.Invoke(this, new ChatClearChatPacketModel(packet));
 						break;
 					case ChatClearMessagePacketModel.CommandID:
-						this.OnClearMessageReceived?.Invoke(this, new ChatClearMessagePacketModel(packet));
+						OnClearMessageReceived?.Invoke(this, new ChatClearMessagePacketModel(packet));
 						break;
 					case ChatNoticePacketModel.CommandID:
-						this.OnNoticeReceived?.Invoke(this, new ChatNoticePacketModel(packet));
+						OnNoticeReceived?.Invoke(this, new ChatNoticePacketModel(packet));
 						break;
 					case ChatUserNoticePacketModel.CommandID:
-						this.OnUserNoticeReceived?.Invoke(this, new ChatUserNoticePacketModel(packet));
+						OnUserNoticeReceived?.Invoke(this, new ChatUserNoticePacketModel(packet));
 						break;
 					case ChatGlobalUserStatePacketModel.CommandID:
-						this.OnGlobalUserStateReceived?.Invoke(this, new ChatGlobalUserStatePacketModel(packet));
+						OnGlobalUserStateReceived?.Invoke(this, new ChatGlobalUserStatePacketModel(packet));
 						break;
 				}
 			}
 			return Task.FromResult(0);
 		}
 
-		private async Task<IEnumerable<ChatRawPacketModel>> SendAndListen(Func<Task> sendFunction, IEnumerable<string> validPacketCommands, string endPacketCommand, int secondsToWait = 5)
+		private async Task<IEnumerable<ChatRawPacketModel>> SendAndListenAsync(Func<Task> sendFunction, IEnumerable<string> validPacketCommands, string endPacketCommand, int secondsToWait = 5)
 		{
-			List<ChatRawPacketModel> results = new List<ChatRawPacketModel>();
+			List<ChatRawPacketModel> results = new();
 			bool stillListening = true;
 
-			EventHandler<ChatRawPacketModel> listener = delegate (object sender, ChatRawPacketModel packet)
-			{
-				if (stillListening)
-				{
-					if (validPacketCommands.Contains(packet.Command))
-					{
-						results.Add(packet);
-					}
+            void listener(object sender, ChatRawPacketModel packet)
+            {
+                if (stillListening)
+                {
+                    if (validPacketCommands.Contains(packet.Command))
+                    {
+                        results.Add(packet);
+                    }
 
-					if (packet.Command.Equals(endPacketCommand))
-					{
-						stillListening = false;
-					}
-				}
-			};
+                    if (packet.Command.Equals(endPacketCommand))
+                    {
+                        stillListening = false;
+                    }
+                }
+            }
 
-			this.OnPacketReceived += listener;
+            OnPacketReceived += listener;
 
 			await sendFunction();
 
-			await this.WaitForSuccess(() => !stillListening, secondsToWait);
+			await WaitForSuccessAsync(() => !stillListening, secondsToWait);
 
-			this.OnPacketReceived -= listener;
+			OnPacketReceived -= listener;
 
 			return results;
 		}
@@ -500,13 +485,13 @@ namespace Twitch.Base.Clients
 		private ChatRawPacketModel ProcessPacketChunk(string packetMessage)
 		{
 			MessageState state = MessageState.Start;
-			Dictionary<string, string> tags = new Dictionary<string, string>();
-			StringBuilder key = new StringBuilder();
-			StringBuilder value = new StringBuilder();
-			StringBuilder prefix = new StringBuilder();
-			StringBuilder command = new StringBuilder();
-			StringBuilder parameter = new StringBuilder();
-			List<string> parameters = new List<string>();
+			Dictionary<string, string> tags = new();
+			StringBuilder key = new();
+			StringBuilder value = new();
+			StringBuilder prefix = new();
+			StringBuilder command = new();
+			StringBuilder parameter = new();
+			List<string> parameters = new();
 
 			for (int i = 0; i < packetMessage.Length; i++)
 			{
@@ -719,7 +704,7 @@ namespace Twitch.Base.Clients
 				}
 			}
 
-			var lastParam = parameter.ToString();
+            string lastParam = parameter.ToString();
 			if (!string.IsNullOrWhiteSpace(lastParam))
 			{
 				parameters.Add(lastParam);

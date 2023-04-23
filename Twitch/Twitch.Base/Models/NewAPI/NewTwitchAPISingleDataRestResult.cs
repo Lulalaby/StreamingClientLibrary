@@ -18,9 +18,9 @@ namespace Twitch.Base.Models.NewAPI
 		/// </summary>
 		public JObject pagination { get; set; }
 
-		/// <summary>
-		/// The pagination cursor.
-		/// </summary>
-		public string Cursor { get { return (this.pagination != null && this.pagination.ContainsKey("cursor")) ? this.pagination["cursor"].ToString() : null; } }
-	}
+        /// <summary>
+        /// The pagination cursor.
+        /// </summary>
+        public string Cursor => (pagination != null && pagination.ContainsKey("cursor")) ? pagination["cursor"].ToString() : null;
+    }
 }

@@ -101,24 +101,24 @@
 		/// <param name="connection">The Twitch connection</param>
 		public NewTwitchAPIServices(TwitchConnection connection)
 		{
-			this.Ads = new AdsService(connection);
-			this.Bits = new BitsService(connection);
-			this.ChannelPoints = new ChannelPointsService(connection);
-			this.Channels = new ChannelsService(connection);
-			this.Charity = new CharityService(connection);
-			this.Chat = new ChatService(connection);
-			this.Clips = new ClipsService(connection);
-			this.EventSub = new EventSubService(connection);
-			this.Games = new GamesService(connection);
-			this.Polls = new PollsService(connection);
-			this.Predictions = new PredictionsService(connection);
-			this.Schedule = new ScheduleService(connection);
-			this.Streams = new StreamsService(connection);
-			this.Subscriptions = new SubscriptionsService(connection);
-			this.Tags = new TagsService(connection);
-			this.Teams = new TeamsService(connection);
-			this.Users = new UsersService(connection);
-			this.Webhooks = new WebhooksService(connection);
+			Ads = new AdsService(connection);
+			Bits = new BitsService(connection);
+			ChannelPoints = new ChannelPointsService(connection);
+			Channels = new ChannelsService(connection);
+			Charity = new CharityService(connection);
+			Chat = new ChatService(connection);
+			Clips = new ClipsService(connection);
+			EventSub = new EventSubService(connection);
+			Games = new GamesService(connection);
+			Polls = new PollsService(connection);
+			Predictions = new PredictionsService(connection);
+			Schedule = new ScheduleService(connection);
+			Streams = new StreamsService(connection);
+			Subscriptions = new SubscriptionsService(connection);
+			Tags = new TagsService(connection);
+			Teams = new TeamsService(connection);
+			Users = new UsersService(connection);
+			Webhooks = new WebhooksService(connection);
 		}
 	}
 }

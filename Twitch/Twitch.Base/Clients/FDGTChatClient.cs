@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 using StreamingClient.Base.Util;
 
@@ -20,21 +20,21 @@ namespace Twitch.Base.Clients
 		/// <param name="connection">The current connection</param>
 		public FDGTChatClient(TwitchConnection connection) : base(connection) { }
 
-		/// <summary>
-		/// Connects to the default ChatClient connection.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public override async Task Connect() { await this.Connect(FDGTChatClient.FDGT_CHAT_CONNECTION_URL); }
+        /// <summary>
+        /// Connects to the default ChatClient connection.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public override async Task ConnectAsync() => await ConnectAsync(FDGT_CHAT_CONNECTION_URL);
 
-		/// <summary>
-		/// Sends a test message to trigger an event through FDGT.
-		/// </summary>
-		/// <param name="message">The message to send</param>
-		/// <returns>An awaitable Task</returns>
-		public async Task SendTestMessage(string message)
+        /// <summary>
+        /// Sends a test message to trigger an event through FDGT.
+        /// </summary>
+        /// <param name="message">The message to send</param>
+        /// <returns>An awaitable Task</returns>
+        public async Task SendTestMessageAsync(string message)
 		{
 			Validator.ValidateString(message, "message");
-			await this.Send(string.Format("PRIVMSG #channel :{0}", message));
+			await SendAsync(string.Format("PRIVMSG #channel :{0}", message));
 		}
 	}
 }

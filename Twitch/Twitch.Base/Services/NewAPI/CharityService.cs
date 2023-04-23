@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,12 +27,12 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="broadcaster">The broadcaster to get the charity campaign for</param>
 		/// <returns>The broadcaster's current charity</returns>
-		public async Task<CharityCampaignModel> GetCharityCampaign(UserModel broadcaster)
+		public async Task<CharityCampaignModel> GetCharityCampaignAsync(UserModel broadcaster)
 		{
 			Validator.ValidateVariable(broadcaster, nameof(broadcaster));
 
-			IEnumerable<CharityCampaignModel> campaigns = await this.GetDataResultAsync<CharityCampaignModel>("charity/campaigns?broadcaster_id=" + broadcaster.id);
-			return (campaigns != null) ? campaigns.FirstOrDefault() : null;
+			IEnumerable<CharityCampaignModel> campaigns = await GetDataResultAsync<CharityCampaignModel>("charity/campaigns?broadcaster_id=" + broadcaster.id);
+			return campaigns?.FirstOrDefault();
 		}
 
 		/// <summary>
@@ -43,11 +43,11 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="broadcaster">The broadcaster to get the charity campaign donations for</param>
 		/// <param name="maxResults">The maximum number of results. Will be either that amount or slightly more</param>
 		/// <returns>The broadcaster's current charity donation</returns>
-		public async Task<IEnumerable<CharityCampaignDonationModel>> GetCharityCampaignDonations(UserModel broadcaster, int maxResults = 1)
+		public async Task<IEnumerable<CharityCampaignDonationModel>> GetCharityCampaignDonationsAsync(UserModel broadcaster, int maxResults = 1)
 		{
 			Validator.ValidateVariable(broadcaster, nameof(broadcaster));
 
-			return await this.GetPagedDataResultAsync<CharityCampaignDonationModel>("charity/campaigns?broadcaster_id=" + broadcaster.id, maxResults);
+			return await GetPagedDataResultAsync<CharityCampaignDonationModel>("charity/campaigns?broadcaster_id=" + broadcaster.id, maxResults);
 		}
 	}
 }

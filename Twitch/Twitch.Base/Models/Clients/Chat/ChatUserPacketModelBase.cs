@@ -34,20 +34,20 @@ namespace Twitch.Base.Models.Clients.Chat
 		public ChatUserPacketModelBase(ChatRawPacketModel packet)
 			: base(packet)
 		{
-			this.UserDisplayName = packet.GetTagString("display-name");
-			this.UserBadgeInfo = packet.GetTagString("badge-info");
-			this.UserBadges = packet.GetTagString("badges");
-			this.Color = packet.GetTagString("color");
+			UserDisplayName = packet.GetTagString("display-name");
+			UserBadgeInfo = packet.GetTagString("badge-info");
+			UserBadges = packet.GetTagString("badges");
+			Color = packet.GetTagString("color");
 		}
 
-		/// <summary>
-		/// A dictionary containing the user's badges and associated versions.
-		/// </summary>
-		public Dictionary<string, int> BadgeDictionary { get { return this.ParseBadgeDictionary(this.UserBadges); } }
+        /// <summary>
+        /// A dictionary containing the user's badges and associated versions.
+        /// </summary>
+        public Dictionary<string, int> BadgeDictionary => ParseBadgeDictionary(UserBadges);
 
-		/// <summary>
-		/// A dictionary containing the user's badges and associated versions.
-		/// </summary>
-		public Dictionary<string, int> BadgeInfoDictionary { get { return this.ParseBadgeDictionary(this.UserBadgeInfo); } }
-	}
+        /// <summary>
+        /// A dictionary containing the user's badges and associated versions.
+        /// </summary>
+        public Dictionary<string, int> BadgeInfoDictionary => ParseBadgeDictionary(UserBadgeInfo);
+    }
 }

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>StreamingClient.Base</AssemblyName>
     <RootNamespace>StreamingClient.Base</RootNamespace>
     <Copyright>Copyright © Matthew Olivo (SaviorXTanren) 2017-2021</Copyright>
@@ -26,10 +26,12 @@ For more information, please see our project site: https://github.com/SaviorXTan
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>StreamingClient.Base.xml</DocumentationFile>
+    <NoWarn>1701;1702;IDE0073</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>S:\Code\mixer-client-csharp\StreamingClient.Base\StreamingClient.Base.xml</DocumentationFile>
+    <NoWarn>1701;1702;IDE0073</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

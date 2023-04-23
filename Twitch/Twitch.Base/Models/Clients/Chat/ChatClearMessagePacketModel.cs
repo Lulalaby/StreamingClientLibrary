@@ -32,9 +32,9 @@
 		public ChatClearMessagePacketModel(ChatRawPacketModel packet)
 			: base(packet)
 		{
-			this.ID = packet.GetTagString("target-msg-id");
-			this.UserLogin = packet.GetTagString("login");
-			this.Message = packet.Get1SkippedParameterText;
+			ID = packet.GetTagString("target-msg-id");
+			UserLogin = packet.GetTagString("login");
+			Message = packet.Get1SkippedParameterText;
 		}
 	}
 }

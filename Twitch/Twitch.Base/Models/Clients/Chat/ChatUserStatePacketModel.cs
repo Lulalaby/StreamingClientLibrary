@@ -29,8 +29,8 @@ namespace Twitch.Base.Models.Clients.Chat
 		public ChatUserStatePacketModel(ChatRawPacketModel packet)
 			: base(packet)
 		{
-			this.Moderator = packet.GetTagBool("mod");
-			this.EmoteSets = packet.GetTagString("emote-sets");
+			Moderator = packet.GetTagBool("mod");
+			EmoteSets = packet.GetTagString("emote-sets");
 		}
 
 		/// <summary>
@@ -40,10 +40,10 @@ namespace Twitch.Base.Models.Clients.Chat
 		{
 			get
 			{
-				HashSet<string> results = new HashSet<string>();
-				if (!string.IsNullOrEmpty(this.EmoteSets))
+				HashSet<string> results = new();
+				if (!string.IsNullOrEmpty(EmoteSets))
 				{
-					string[] splits = this.EmoteSets.Split(new char[] { ',' });
+					string[] splits = EmoteSets.Split(new char[] { ',' });
 					if (splits != null)
 					{
 						results = new HashSet<string>(splits);

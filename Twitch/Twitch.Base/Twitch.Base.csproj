@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Twitch.Base</AssemblyName>
     <RootNamespace>Twitch.Base</RootNamespace>
     <Copyright>Copyright © Matthew Olivo (SaviorXTanren) 2017-2022</Copyright>
@@ -23,6 +23,7 @@ For more information, please see our project site: https://github.com/SaviorXTan
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>obj\Debug\netstandard2.0\Twitch.Base.xml</DocumentationFile>
+    <NoWarn>1701;1702;IDE0073</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,6 +41,10 @@ For more information, please see our project site: https://github.com/SaviorXTan
     <PackageId>StreamingClientLibrary.Twitch</PackageId>
     <PackageLicenseUrl>https://github.com/SaviorXTanren/StreamingClientLibrary/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageReleaseNotes>Updating EventSub connection URL</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;IDE0073</NoWarn>
   </PropertyGroup>
 
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,52 +70,43 @@ namespace Twitch.Base.Clients
 		/// </summary>
 		public event EventHandler<PubSubChannelPointsRedemptionEventModel> OnChannelPointsRedeemed = delegate { };
 
-		private TwitchConnection connection;
+		private readonly TwitchConnection connection;
 
-		/// <summary>
-		/// Creates a new instance of the PubSubClient class.
-		/// </summary>
-		/// <param name="connection">The current connection</param>
-		public PubSubClient(TwitchConnection connection)
+        /// <summary>
+        /// Creates a new instance of the PubSubClient class.
+        /// </summary>
+        /// <param name="connection">The current connection</param>
+        public PubSubClient(TwitchConnection connection) => this.connection = connection;
+
+        /// <summary>
+        /// Connects to the default PubSub connection.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task ConnectAsync() => await base.ConnectAsync(PUBSUB_CONNECTION_URL);
+
+        /// <summary>
+        /// Sends a listen packet for a specified set of topics.
+        /// </summary>
+        /// <param name="topics">The topics to listen for</param>
+        /// <returns>An awaitable Task</returns>
+        public async Task ListenAsync(IEnumerable<PubSubListenTopicModel> topics)
 		{
-			this.connection = connection;
+			OAuthTokenModel oauthToken = await connection.GetOAuthTokenAsync();
+			await SendAsync(new PubSubPacketModel("LISTEN", new { topics = topics.Select(t => t.ToString()).ToList(), auth_token = oauthToken.accessToken }));
 		}
 
-		/// <summary>
-		/// Connects to the default PubSub connection.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task Connect()
-		{
-			await base.Connect(PubSubClient.PUBSUB_CONNECTION_URL);
-		}
+        /// <summary>
+        /// Sends a ping packet.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task PingAsync() => await SendAsync(JSONSerializerHelper.SerializeToString(new { type = "PING" }));
 
-		/// <summary>
-		/// Sends a listen packet for a specified set of topics.
-		/// </summary>
-		/// <param name="topics">The topics to listen for</param>
-		/// <returns>An awaitable Task</returns>
-		public async Task Listen(IEnumerable<PubSubListenTopicModel> topics)
-		{
-			OAuthTokenModel oauthToken = await this.connection.GetOAuthToken();
-			await this.Send(new PubSubPacketModel("LISTEN", new { topics = topics.Select(t => t.ToString()).ToList(), auth_token = oauthToken.accessToken }));
-		}
-
-		/// <summary>
-		/// Sends a ping packet.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task Ping()
-		{
-			await this.Send(JSONSerializerHelper.SerializeToString(new { type = "PING" }));
-		}
-
-		/// <summary>
-		/// Processes the received text packet.
-		/// </summary>
-		/// <param name="packetText">The receive text packet</param>
-		/// <returns>An awaitable task</returns>
-		protected override Task ProcessReceivedPacket(string packetText)
+        /// <summary>
+        /// Processes the received text packet.
+        /// </summary>
+        /// <param name="packetText">The receive text packet</param>
+        /// <returns>An awaitable task</returns>
+        protected override Task ProcessReceivedPacket(string packetText)
 		{
 			Logger.Log(LogLevel.Debug, "Twitch PubSub Packet Received: " + packetText);
 
@@ -125,14 +116,14 @@ namespace Twitch.Base.Clients
 				switch (packet.type)
 				{
 					case "RECONNECT":
-						this.OnReconnectReceived?.Invoke(this, new EventArgs());
+						OnReconnectReceived?.Invoke(this, new EventArgs());
 						break;
 					case "RESPONSE":
-						this.OnResponseReceived?.Invoke(this, JSONSerializerHelper.DeserializeFromString<PubSubResponsePacketModel>(packetText));
+						OnResponseReceived?.Invoke(this, JSONSerializerHelper.DeserializeFromString<PubSubResponsePacketModel>(packetText));
 						break;
 					case "MESSAGE":
 						PubSubMessagePacketModel messagePacket = JSONSerializerHelper.DeserializeFromString<PubSubMessagePacketModel>(packetText);
-						this.OnMessageReceived?.Invoke(this, messagePacket);
+						OnMessageReceived?.Invoke(this, messagePacket);
 						try
 						{
 							PubSubMessagePacketDataModel messageData = messagePacket.messageData;
@@ -140,35 +131,35 @@ namespace Twitch.Base.Clients
 							{
 								if (messagePacket.topicType == PubSubTopicsEnum.UserWhispers)
 								{
-									this.OnWhisperReceived?.Invoke(this, messageData.data_object.ToObject<PubSubWhisperEventModel>());
+									OnWhisperReceived?.Invoke(this, messageData.data_object.ToObject<PubSubWhisperEventModel>());
 								}
 								else if (messagePacket.topicType == PubSubTopicsEnum.ChannelBitsEventsV1)
 								{
-									this.OnBitsV1Received?.Invoke(this, messageData.data_object.ToObject<PubSubBitsEventV1Model>());
+									OnBitsV1Received?.Invoke(this, messageData.data_object.ToObject<PubSubBitsEventV1Model>());
 								}
 								else if (messagePacket.topicType == PubSubTopicsEnum.ChannelBitsEventsV2)
 								{
-									this.OnBitsV2Received?.Invoke(this, messageData.data_object.ToObject<PubSubBitsEventV2Model>());
+									OnBitsV2Received?.Invoke(this, messageData.data_object.ToObject<PubSubBitsEventV2Model>());
 								}
 								else if (messagePacket.topicType == PubSubTopicsEnum.ChannelBitsBadgeUnlocks)
 								{
-									this.OnBitsBadgeReceived?.Invoke(this, messageData.data_object.ToObject<PubSubBitBadgeEventModel>());
+									OnBitsBadgeReceived?.Invoke(this, messageData.data_object.ToObject<PubSubBitBadgeEventModel>());
 								}
 								else if (messagePacket.topicType == PubSubTopicsEnum.ChannelSubscriptionsV1)
 								{
 									PubSubSubscriptionsEventModel subscription = JSONSerializerHelper.DeserializeFromString<PubSubSubscriptionsEventModel>(messagePacket.message);
 									if (subscription.IsGiftedSubscription || subscription.IsAnonymousGiftedSubscription)
 									{
-										this.OnSubscriptionsGiftedReceived?.Invoke(this, JSONSerializerHelper.DeserializeFromString<PubSubSubscriptionsGiftEventModel>(messagePacket.message));
+										OnSubscriptionsGiftedReceived?.Invoke(this, JSONSerializerHelper.DeserializeFromString<PubSubSubscriptionsGiftEventModel>(messagePacket.message));
 									}
 									else
 									{
-										this.OnSubscribedReceived?.Invoke(this, subscription);
+										OnSubscribedReceived?.Invoke(this, subscription);
 									}
 								}
 								else if (messagePacket.topicType == PubSubTopicsEnum.ChannelPointsRedeemed)
 								{
-									this.OnChannelPointsRedeemed?.Invoke(this, messageData.data_object.ToObject<PubSubChannelPointsRedemptionEventModel>());
+									OnChannelPointsRedeemed?.Invoke(this, messageData.data_object.ToObject<PubSubChannelPointsRedemptionEventModel>());
 								}
 							}
 						}
@@ -178,16 +169,13 @@ namespace Twitch.Base.Clients
 						}
 						break;
 					case "PONG":
-						this.OnPongReceived?.Invoke(this, new EventArgs());
+						OnPongReceived?.Invoke(this, new EventArgs());
 						break;
 				}
 			}
 			return Task.FromResult(0);
 		}
 
-		private async Task Send(PubSubPacketModel packet)
-		{
-			await this.Send(JSONSerializerHelper.SerializeToString(packet));
-		}
-	}
+        private async Task SendAsync(PubSubPacketModel packet) => await SendAsync(JSONSerializerHelper.SerializeToString(packet));
+    }
 }

@@ -24,10 +24,10 @@ namespace Twitch.Base.Models.Clients.PubSub.Messages
 		/// </summary>
 		public int multi_month_duration { get; set; }
 
-		/// <summary>
-		/// Indicates whether the event is a multi-month subscription gift.
-		/// </summary>
-		[JsonIgnore]
-		public bool IsMultiMonth { get { return this.multi_month_duration > 1; } }
-	}
+        /// <summary>
+        /// Indicates whether the event is a multi-month subscription gift.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsMultiMonth => multi_month_duration > 1;
+    }
 }

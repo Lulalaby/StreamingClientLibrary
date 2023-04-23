@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
@@ -28,10 +28,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="prediction">The prediction to create</param>
 		/// <returns>The created prediction</returns>
-		public async Task<PredictionModel> CreatePrediction(CreatePredictionModel prediction)
+		public async Task<PredictionModel> CreatePredictionAsync(CreatePredictionModel prediction)
 		{
 			Validator.ValidateVariable(prediction, "prediction");
-			return (await this.PostDataResultAsync<PredictionModel>("predictions", AdvancedHttpClient.CreateContentFromObject(prediction)))?.FirstOrDefault();
+			return (await PostDataResultAsync<PredictionModel>("predictions", AdvancedHttpClient.CreateContentFromObject(prediction)))?.FirstOrDefault();
 		}
 
 		/// <summary>
@@ -40,11 +40,11 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="broadcaster">The broadcaster to get the prediction for</param>
 		/// <param name="id">The ID of the prediction to get</param>
 		/// <returns>The prediction</returns>
-		public async Task<PredictionModel> GetPrediction(UserModel broadcaster, string id)
+		public async Task<PredictionModel> GetPredictionAsync(UserModel broadcaster, string id)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateString(id, "id");
-			return (await this.GetDataResultAsync<PredictionModel>("predictions?broadcaster_id=" + broadcaster.id + "&id=" + id))?.FirstOrDefault();
+			return (await GetDataResultAsync<PredictionModel>("predictions?broadcaster_id=" + broadcaster.id + "&id=" + id))?.FirstOrDefault();
 		}
 
 		/// <summary>
@@ -54,21 +54,21 @@ namespace Twitch.Base.Services.NewAPI
 		/// <param name="id">The ID of the prediction to get</param>
 		/// <param name="outcomeID">The ID of the selected outcome</param>
 		/// <returns>The prediction</returns>
-		public async Task<PredictionModel> EndPrediction(UserModel broadcaster, string id, string outcomeID)
+		public async Task<PredictionModel> EndPredictionAsync(UserModel broadcaster, string id, string outcomeID)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
 			Validator.ValidateString(id, "id");
 			Validator.ValidateString(outcomeID, "outcomeID");
 
-			JObject jobj = new JObject
-			{
+			JObject jobj = new()
+            {
 				["broadcaster_id"] = broadcaster.id,
 				["id"] = id,
 				["status"] = "RESOLVED",
 				["winning_outcome_id"] = outcomeID
 			};
 
-			return (await this.PatchAsync<NewTwitchAPIDataRestResult<PredictionModel>>("predictions", AdvancedHttpClient.CreateContentFromObject(jobj)))?.data?.FirstOrDefault();
+			return (await PatchAsync<NewTwitchAPIDataRestResult<PredictionModel>>("predictions", AdvancedHttpClient.CreateContentFromObject(jobj)))?.data?.FirstOrDefault();
 		}
 	}
 }

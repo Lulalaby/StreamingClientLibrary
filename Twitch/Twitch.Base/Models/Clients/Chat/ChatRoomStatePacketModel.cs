@@ -44,11 +44,11 @@
 		public ChatRoomStatePacketModel(ChatRawPacketModel packet)
 			: base(packet)
 		{
-			this.EmoteOnly = packet.GetTagBool("emote-only");
-			this.FollowersOnly = packet.GetTagInt("followers-only");
-			this.R9K = packet.GetTagBool("r9k");
-			this.Slow = packet.GetTagInt("slow");
-			this.SubsOnly = packet.GetTagBool("subs-only");
+			EmoteOnly = packet.GetTagBool("emote-only");
+			FollowersOnly = packet.GetTagInt("followers-only");
+			R9K = packet.GetTagBool("r9k");
+			Slow = packet.GetTagInt("slow");
+			SubsOnly = packet.GetTagBool("subs-only");
 		}
 	}
 }

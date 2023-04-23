@@ -97,13 +97,13 @@ namespace Twitch.Base.Models.NewAPI.Channels
 		/// </summary>
 		public int total { get; set; }
 
-		/// <summary>
-		/// Identifies the contribution method is bits.
-		/// </summary>
-		public bool IsBits { get { return string.Equals(BitsType, this.type); } }
-		/// <summary>
-		/// Identifies the contribution method is subs.
-		/// </summary>
-		public bool IsSubs { get { return string.Equals(SubsType, this.type); } }
-	}
+        /// <summary>
+        /// Identifies the contribution method is bits.
+        /// </summary>
+        public bool IsBits => string.Equals(BitsType, type);
+        /// <summary>
+        /// Identifies the contribution method is subs.
+        /// </summary>
+        public bool IsSubs => string.Equals(SubsType, type);
+    }
 }

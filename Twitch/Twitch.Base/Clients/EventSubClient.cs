@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -84,27 +84,24 @@ namespace Twitch.Base.Clients
 			};
 		}
 
-		/// <summary>
-		/// Connects to the default EventSub connection.
-		/// </summary>
-		/// <returns>An awaitable Task</returns>
-		public async Task Connect()
-		{
-			await base.Connect(EventSubClient.EVENT_SUB_CONNECTION_URL);
-		}
+        /// <summary>
+        /// Connects to the default EventSub connection.
+        /// </summary>
+        /// <returns>An awaitable Task</returns>
+        public async Task ConnectAsync() => await base.ConnectAsync(EVENT_SUB_CONNECTION_URL);
 
-		/// <inheritdoc />
-		protected override Task ProcessReceivedPacket(string packet)
+        /// <inheritdoc />
+        protected override Task ProcessReceivedPacket(string packet)
 		{
 			if (!string.IsNullOrEmpty(packet))
 			{
 				JObject jsonData = JObject.Parse(packet);
 
 				string messageTypeString = jsonData["metadata"]?["message_type"]?.Value<string>();
-				if (Enum.TryParse<MessageType>(messageTypeString, out MessageType messageType) &&
-					MessageTypeMap.TryGetValue(messageType, out var actualMessageInfo))
+				if (Enum.TryParse(messageTypeString, out MessageType messageType) &&
+					MessageTypeMap.TryGetValue(messageType, out (Type MessageType, MethodInfo MessageHandler) actualMessageInfo))
 				{
-					var payload = jsonData.ToObject(actualMessageInfo.MessageType);
+                    object payload = jsonData.ToObject(actualMessageInfo.MessageType);
 					actualMessageInfo.MessageHandler.Invoke(this, new object[] { payload });
 				}
 			}
@@ -112,20 +109,17 @@ namespace Twitch.Base.Clients
 			return Task.CompletedTask;
 		}
 
-		/// <summary>
-		/// Override the receive so we can customize the method
-		/// </summary>
-		/// <returns></returns>
-		protected override async Task<WebSocketCloseStatus> Receive()
-		{
-			return await Receive(this.webSocket);
-		}
+        /// <summary>
+        /// Override the receive so we can customize the method
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task<WebSocketCloseStatus> ReceiveAsync() => await ReceiveAsync(webSocket);
 
-		private async Task<WebSocketCloseStatus> Receive(WebSocket currentWebSocket)
+        private async Task<WebSocketCloseStatus> ReceiveAsync(WebSocket currentWebSocket)
 		{
 			string jsonBuffer = string.Empty;
-			byte[] buffer = new byte[WebSocketBase.BUFFER_SIZE];
-			ArraySegment<byte> arrayBuffer = new ArraySegment<byte>(buffer);
+			byte[] buffer = new byte[BUFFER_SIZE];
+			ArraySegment<byte> arrayBuffer = new(buffer);
 
 			WebSocketCloseStatus closeStatus = WebSocketCloseStatus.NormalClosure;
 
@@ -151,7 +145,7 @@ namespace Twitch.Base.Clients
 								{
 									TextReceivedOccurred(jsonBuffer);
 
-									await this.ProcessReceivedPacket(jsonBuffer);
+									await ProcessReceivedPacket(jsonBuffer);
 									jsonBuffer = string.Empty;
 								}
 							}
@@ -178,34 +172,34 @@ namespace Twitch.Base.Clients
 
 			if (closeStatus != WebSocketCloseStatus.NormalClosure)
 			{
-				await this.DisconnectAndFireEvent(closeStatus);
+				await DisconnectAndFireEventAsync(closeStatus);
 			}
 			else
 			{
-				await this.Disconnect(closeStatus);
+				await Disconnect(closeStatus);
 			}
 
 			return closeStatus;
 		}
 
-		private async Task HandleMessage(WelcomeMessage message)
+		private async Task HandleMessageAsync(WelcomeMessage message)
 		{
-			if (this.oldSocket != null)
+			if (oldSocket != null)
 			{
-				await this.oldSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Reconnected", CancellationToken.None);
-				this.oldSocket = null;
+				await oldSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Reconnected", CancellationToken.None);
+				oldSocket = null;
 			}
 
-			this.OnWelcomeMessageReceived?.Invoke(this, message);
+			OnWelcomeMessageReceived?.Invoke(this, message);
 		}
 
 		private Task HandleMessage(KeepAliveMessage message)
 		{
-			this.OnKeepAliveMessageReceived?.Invoke(this, message);
+			OnKeepAliveMessageReceived?.Invoke(this, message);
 			return Task.CompletedTask;
 		}
 
-		private async Task HandleMessage(ReconnectMessage message)
+		private async Task HandleMessageAsync(ReconnectMessage message)
 		{
 			// Implement Reconnect Message per: https://dev.twitch.tv/docs/eventsub/handling-websocket-events/#reconnect-message
 			// A reconnect message is sent if the server has to drop the connection. The message is sent 30 seconds prior to dropping the connection.
@@ -213,27 +207,27 @@ namespace Twitch.Base.Clients
 			// The connection will include the same subscriptions that the old connection had. You should not close the old connection until you receive a Welcome message on the new connection.
 
 			// Save the old socket for later disconnect
-			this.oldSocket = this.webSocket;
+			oldSocket = webSocket;
 
 			// Create a new socket and start listening
-			ClientWebSocket newSocket = this.CreateWebSocket();
+			ClientWebSocket newSocket = CreateWebSocket();
 			await newSocket.ConnectAsync(new Uri(message.Payload.Session.ReconnectUrl), CancellationToken.None);
-			this.SetWebSocket(this.webSocket);
-			this.Receive(newSocket).Wait(1);
+			SetWebSocket(webSocket);
+			ReceiveAsync(newSocket).Wait(1);
 
 			// Trigger message
-			this.OnReconnectMessageReceived?.Invoke(this, message);
+			OnReconnectMessageReceived?.Invoke(this, message);
 		}
 
 		private Task HandleMessage(NotificationMessage message)
 		{
-			this.OnNotificationMessageReceived?.Invoke(this, message);
+			OnNotificationMessageReceived?.Invoke(this, message);
 			return Task.CompletedTask;
 		}
 
 		private Task HandleMessage(RevocationMessage message)
 		{
-			this.OnRevocationMessageReceived?.Invoke(this, message);
+			OnRevocationMessageReceived?.Invoke(this, message);
 			return Task.CompletedTask;
 		}
 	}

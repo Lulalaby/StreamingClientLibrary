@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Twitch.Base.Models.Clients.Chat
@@ -85,50 +85,50 @@ namespace Twitch.Base.Models.Clients.Chat
 		public ChatMessagePacketModel(ChatRawPacketModel packet)
 			: base(packet)
 		{
-			this.ID = packet.GetTagString("id");
-			this.Message = packet.Get1SkippedParameterText;
+			ID = packet.GetTagString("id");
+			Message = packet.Get1SkippedParameterText;
 
-			this.UserID = packet.GetTagString("user-id");
-			this.UserLogin = packet.GetUserLogin;
-			this.UserDisplayName = packet.GetTagString("display-name");
-			this.UserBadgeInfo = packet.GetTagString("badge-info");
-			this.UserBadges = packet.GetTagString("badges");
-			this.Moderator = packet.GetTagBool("mod");
+			UserID = packet.GetTagString("user-id");
+			UserLogin = packet.GetUserLogin;
+			UserDisplayName = packet.GetTagString("display-name");
+			UserBadgeInfo = packet.GetTagString("badge-info");
+			UserBadges = packet.GetTagString("badges");
+			Moderator = packet.GetTagBool("mod");
 
-			this.Color = packet.GetTagString("color");
-			this.Emotes = packet.GetTagString("emotes");
-			this.RoomID = packet.GetTagString("room-id");
+			Color = packet.GetTagString("color");
+			Emotes = packet.GetTagString("emotes");
+			RoomID = packet.GetTagString("room-id");
 
-			this.Bits = packet.GetTagString("bits");
+			Bits = packet.GetTagString("bits");
 
-			this.Timestamp = packet.GetTagString("tmi-sent-ts");
+			Timestamp = packet.GetTagString("tmi-sent-ts");
 		}
 
 
-		/// <summary>
-		/// A dictionary containing the user's badges and associated versions.
-		/// </summary>
-		public Dictionary<string, int> BadgeDictionary { get { return this.ParseBadgeDictionary(this.UserBadges); } }
+        /// <summary>
+        /// A dictionary containing the user's badges and associated versions.
+        /// </summary>
+        public Dictionary<string, int> BadgeDictionary => ParseBadgeDictionary(UserBadges);
 
-		/// <summary>
-		/// A dictionary containing the user's badges and associated versions.
-		/// </summary>
-		public Dictionary<string, int> BadgeInfoDictionary { get { return this.ParseBadgeDictionary(this.UserBadgeInfo); } }
+        /// <summary>
+        /// A dictionary containing the user's badges and associated versions.
+        /// </summary>
+        public Dictionary<string, int> BadgeInfoDictionary => ParseBadgeDictionary(UserBadgeInfo);
 
-		/// <summary>
-		/// A dictionary containing the emote IDs used by the user in the message and their location in the message
-		/// </summary>
-		public Dictionary<string, List<Tuple<int, int>>> EmotesDictionary
+        /// <summary>
+        /// A dictionary containing the emote IDs used by the user in the message and their location in the message
+        /// </summary>
+        public Dictionary<string, List<Tuple<int, int>>> EmotesDictionary
 		{
 			get
 			{
-				Dictionary<string, List<Tuple<int, int>>> results = new Dictionary<string, List<Tuple<int, int>>>();
-				if (!string.IsNullOrEmpty(this.Emotes))
+				Dictionary<string, List<Tuple<int, int>>> results = new();
+				if (!string.IsNullOrEmpty(Emotes))
 				{
-					string[] splits = this.Emotes.Split(new char[] { '/', ':' });
+					string[] splits = Emotes.Split(new char[] { '/', ':' });
 					if (splits != null && splits.Length > 0 && splits.Length % 2 == 0)
 					{
-						for (int i = 0; i < splits.Length; i = i + 2)
+						for (int i = 0; i < splits.Length; i += 2)
 						{
 							string setID = splits[i];
 							results[setID] = new List<Tuple<int, int>>();
@@ -136,7 +136,7 @@ namespace Twitch.Base.Models.Clients.Chat
 							string[] setSplits = splits[i + 1].Split(new char[] { '-', ',' });
 							if (setSplits != null && setSplits.Length > 0 && setSplits.Length % 2 == 0)
 							{
-								for (int j = 0; j < setSplits.Length; j = j + 2)
+								for (int j = 0; j < setSplits.Length; j += 2)
 								{
 									if (int.TryParse(setSplits[j], out int start) && int.TryParse(setSplits[j + 1], out int end))
 									{

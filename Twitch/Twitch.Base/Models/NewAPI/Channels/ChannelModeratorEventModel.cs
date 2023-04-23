@@ -31,15 +31,15 @@ namespace Twitch.Base.Models.NewAPI.Channels
 		/// </summary>
 		public ChannelModeratorEventDataModel event_data { get; set; }
 
-		/// <summary>
-		/// Indicates if the event is a ban.
-		/// </summary>
-		public bool IsMod { get { return string.Equals(this.event_type, ModEventType, StringComparison.InvariantCultureIgnoreCase); } }
-		/// <summary>
-		/// Indicates if the event is an unban.
-		/// </summary>
-		public bool IsUnmod { get { return string.Equals(this.event_type, UnmodEventType, StringComparison.InvariantCultureIgnoreCase); } }
-	}
+        /// <summary>
+        /// Indicates if the event is a ban.
+        /// </summary>
+        public bool IsMod => string.Equals(event_type, ModEventType, StringComparison.InvariantCultureIgnoreCase);
+        /// <summary>
+        /// Indicates if the event is an unban.
+        /// </summary>
+        public bool IsUnmod => string.Equals(event_type, UnmodEventType, StringComparison.InvariantCultureIgnoreCase);
+    }
 
 	/// <summary>
 	/// Information about the data of a channel ban.

@@ -15,14 +15,11 @@
 		/// </summary>
 		public string UserLogin { get; set; }
 
-		/// <summary>
-		/// Creates a new instance of the ChatUserJoinPacketModel class.
-		/// </summary>
-		/// <param name="packet">The Chat packet</param>
-		public ChatUserJoinPacketModel(ChatRawPacketModel packet)
-			: base(packet)
-		{
-			this.UserLogin = packet.GetUserLogin;
-		}
-	}
+        /// <summary>
+        /// Creates a new instance of the ChatUserJoinPacketModel class.
+        /// </summary>
+        /// <param name="packet">The Chat packet</param>
+        public ChatUserJoinPacketModel(ChatRawPacketModel packet)
+            : base(packet) => UserLogin = packet.GetUserLogin;
+    }
 }

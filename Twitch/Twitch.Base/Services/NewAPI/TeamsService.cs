@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,10 +25,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="broadcaster">The broadcaster to get teams for</param>
 		/// <returns>A list of teams</returns>
-		public async Task<IEnumerable<TeamModel>> GetChannelTeams(UserModel broadcaster)
+		public async Task<IEnumerable<TeamModel>> GetChannelTeamsAsync(UserModel broadcaster)
 		{
 			Validator.ValidateVariable(broadcaster, "broadcaster");
-			return await this.GetDataResultAsync<TeamModel>("teams/channel?broadcaster_id=" + broadcaster.id);
+			return await GetDataResultAsync<TeamModel>("teams/channel?broadcaster_id=" + broadcaster.id);
 		}
 
 		/// <summary>
@@ -36,10 +36,10 @@ namespace Twitch.Base.Services.NewAPI
 		/// </summary>
 		/// <param name="id">The ID of the team</param>
 		/// <returns>A list of teams</returns>
-		public async Task<TeamDetailsModel> GetTeam(string id)
+		public async Task<TeamDetailsModel> GetTeamAsync(string id)
 		{
 			Validator.ValidateString(id, "id");
-			IEnumerable<TeamDetailsModel> results = await this.GetDataResultAsync<TeamDetailsModel>("teams?id=" + id);
+			IEnumerable<TeamDetailsModel> results = await GetDataResultAsync<TeamDetailsModel>("teams?id=" + id);
 			return results.FirstOrDefault();
 		}
 	}

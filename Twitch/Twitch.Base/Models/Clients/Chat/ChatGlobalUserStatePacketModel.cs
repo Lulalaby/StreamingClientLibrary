@@ -15,14 +15,11 @@
 		/// </summary>
 		public long UserID { get; set; }
 
-		/// <summary>
-		/// Creates a new instance of the ChatUserStatePacketModel class.
-		/// </summary>
-		/// <param name="packet">The Chat packet</param>
-		public ChatGlobalUserStatePacketModel(ChatRawPacketModel packet)
-			: base(packet)
-		{
-			this.UserID = packet.GetTagLong("user-id");
-		}
-	}
+        /// <summary>
+        /// Creates a new instance of the ChatUserStatePacketModel class.
+        /// </summary>
+        /// <param name="packet">The Chat packet</param>
+        public ChatGlobalUserStatePacketModel(ChatRawPacketModel packet)
+            : base(packet) => UserID = packet.GetTagLong("user-id");
+    }
 }

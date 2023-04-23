@@ -19,14 +19,11 @@ namespace Twitch.Base.Models.Clients.Chat
 		/// </summary>
 		public List<string> UserLogins { get; set; }
 
-		/// <summary>
-		/// Creates a new instance of the ChatUsersListPacketModel class.
-		/// </summary>
-		/// <param name="packet">The Chat packet</param>
-		public ChatUsersListPacketModel(ChatRawPacketModel packet)
-			: base(packet)
-		{
-			this.UserLogins = packet.Parameters.Last().Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
-		}
-	}
+        /// <summary>
+        /// Creates a new instance of the ChatUsersListPacketModel class.
+        /// </summary>
+        /// <param name="packet">The Chat packet</param>
+        public ChatUsersListPacketModel(ChatRawPacketModel packet)
+            : base(packet) => UserLogins = packet.Parameters.Last().Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+    }
 }

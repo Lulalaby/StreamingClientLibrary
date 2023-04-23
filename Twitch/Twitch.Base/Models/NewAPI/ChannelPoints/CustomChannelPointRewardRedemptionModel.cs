@@ -57,20 +57,20 @@ namespace Twitch.Base.Models.NewAPI.ChannelPoints
 		/// </summary>
 		public CustomChannelPointRewardModel reward { get; set; }
 
-		/// <summary>
-		/// Whether the reward is fulfilled.
-		/// </summary>
-		[JsonIgnore]
-		public bool IsUnfulfilled { get { return string.Equals(this.status, CustomChannelPointRewardRedemptionModel.UNFULFILLED_STATUS, System.StringComparison.InvariantCultureIgnoreCase); } }
-		/// <summary>
-		/// Whether the reward is fulfilled.
-		/// </summary>
-		[JsonIgnore]
-		public bool IsFulfilled { get { return string.Equals(this.status, CustomChannelPointRewardRedemptionModel.FULFILLED_STATUS, System.StringComparison.InvariantCultureIgnoreCase); } }
-		/// <summary>
-		/// Whether the reward is fulfilled.
-		/// </summary>
-		[JsonIgnore]
-		public bool IsCanceled { get { return string.Equals(this.status, CustomChannelPointRewardRedemptionModel.CANCELED_STATUS, System.StringComparison.InvariantCultureIgnoreCase); } }
-	}
+        /// <summary>
+        /// Whether the reward is fulfilled.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsUnfulfilled => string.Equals(status, UNFULFILLED_STATUS, System.StringComparison.InvariantCultureIgnoreCase);
+        /// <summary>
+        /// Whether the reward is fulfilled.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsFulfilled => string.Equals(status, FULFILLED_STATUS, System.StringComparison.InvariantCultureIgnoreCase);
+        /// <summary>
+        /// Whether the reward is fulfilled.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsCanceled => string.Equals(status, CANCELED_STATUS, System.StringComparison.InvariantCultureIgnoreCase);
+    }
 }

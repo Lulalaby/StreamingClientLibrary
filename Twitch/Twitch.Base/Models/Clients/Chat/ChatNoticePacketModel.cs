@@ -27,8 +27,8 @@
 		public ChatNoticePacketModel(ChatRawPacketModel packet)
 			: base(packet)
 		{
-			this.MessageID = packet.GetTagString("msg-id");
-			this.Message = packet.Get1SkippedParameterText;
+			MessageID = packet.GetTagString("msg-id");
+			Message = packet.Get1SkippedParameterText;
 		}
 	}
 }

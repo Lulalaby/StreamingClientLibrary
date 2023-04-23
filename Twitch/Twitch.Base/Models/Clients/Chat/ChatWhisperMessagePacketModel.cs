@@ -1,4 +1,4 @@
-﻿namespace Twitch.Base.Models.Clients.Chat
+namespace Twitch.Base.Models.Clients.Chat
 {
 	/// <summary>
 	/// Information about a Chat whisper message packet.
@@ -8,7 +8,7 @@
 		/// <summary>
 		/// The ID of the command for a chat message.
 		/// </summary>
-		new public const string CommandID = "WHISPER";
+		public new const string CommandID = "WHISPER";
 
 		/// <summary>
 		/// Creates a new instance of the ChatWhisperMessagePacketModel
