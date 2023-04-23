@@ -16,11 +16,13 @@ namespace StreamingClient.Base.Model.OAuth
 		/// </summary>
 		[DataMember]
 		public string clientID { get; set; }
+
 		/// <summary>
 		/// The secret of the client service.
 		/// </summary>
 		[DataMember]
 		public string clientSecret { get; set; }
+
 		/// <summary>
 		/// The authorization code sent when authenticating against the OAuth service.
 		/// </summary>
@@ -30,23 +32,25 @@ namespace StreamingClient.Base.Model.OAuth
 		/// <summary>
 		/// The token used for refreshing the authentication.
 		/// </summary>
-		[JsonProperty("refresh_token")]
+		[JsonProperty("refresh_token"), DataMember]
 		public string refreshToken { get; set; }
 
 		/// <summary>
 		/// The token used for accessing the OAuth service.
 		/// </summary>
-		[JsonProperty("access_token")]
+		[JsonProperty("access_token"), DataMember]
 		public string accessToken { get; set; }
 
 		/// <summary>
 		/// The expiration time of the token in seconds from when it was obtained.
 		/// </summary>
-		[JsonProperty("expires_in")]
+		[JsonProperty("expires_in"), DataMember]
 		public long expiresIn { get; set; }
+
 		/// <summary>
 		/// The timestamp of the expiration, if supported by the service, in seconds from Unix Epoch
 		/// </summary>
+		[JsonIgnore]
 		public long expiresTimeStamp { get; set; }
 
 		/// <summary>
